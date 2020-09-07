@@ -3,6 +3,7 @@ output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- Referências aqui: https://github.com/cienciadedatos/datos-de-miercoles/blob/master/30-dias-de-graficos-2020.md -->
 
 ```{r, include = FALSE}
@@ -14,7 +15,10 @@ knitr::opts_chunk$set(
 
 # TrabalhoFinal
 
+[Olhar aqui referências de mapas](https://github.com/cienciadedatos/datos-de-miercoles/blob/master/30-dias-de-graficos-2020.md)
+
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 The goal of TrabalhoFinal is to ...
