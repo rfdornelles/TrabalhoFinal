@@ -18,7 +18,7 @@ infopen_original <- readr::read_csv2(file = "data-raw/infopen_2019_12.csv",
 # Vou ficar apenas com as sobre capacidade e lotação
 
 infopen_limpo <- infopen_original %>%
-  select(UF, `Nome do Estabelecimento`, CEP, `Código IBGE`,
+  select(`Nome do Estabelecimento`, Município, UF, CEP, `Código IBGE`,
          capacidade_mas = `1.3 Capacidade do estabelecimento | Masculino | Total`,
          capacidade_fem = `1.3 Capacidade do estabelecimento | Feminino | Total`,
          populacao = `4.1 População prisional | Total`) %>%
@@ -26,7 +26,8 @@ infopen_limpo <- infopen_original %>%
 
 # Nas capacidades preciso substituir NA por 0
 
-infopen_limpo <- purrr::map_df(infopen, ~tidyr::replace_na(.x, replace = 0))
+infopen_limpo <- purrr::map_df(infopen_limpo,
+                               ~tidyr::replace_na(.x, replace = 0))
 
 # Salvar e deixar o original como bakcup
 infopen <- infopen_limpo
@@ -39,9 +40,14 @@ rm(infopen_limpo)
 infopen <- infopen %>%
   mutate(
     tx.ocupacao = populacao/(capacidade_mas + capacidade_fem)*100
-  ) %>%
-  select(-codigo_ibge)
+  )
 
+# Acrescentar capacidade_tot
+
+infopen <- infopen %>%
+  mutate(
+    capacidade_tot = capacidade_fem + capacidade_mas
+  )
 
 # Acrescentar perfil: masculina, feminina, mista
 
@@ -54,22 +60,87 @@ infopen <- infopen %>%
       TRUE ~ "outros"
     ))
 
+# Acrescentar se é superlotada ou não
+
+infopen <- infopen %>%
+  mutate(
+    superlotada = if_else(tx.ocupacao <= 100, FALSE, TRUE)
+  )
+
 #### Exploração ####
 
+infopen %>% summary()
+
+graf_infopen <- infopen %>%
+  ggplot(aes(x = capacidade_tot,
+             y = populacao))
+
+ggplot(infopen) +
+  geom_histogram(aes(x = capacidade_tot))
+
+graf_infopen +
+  geom_point(aes(color = superlotada)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~perfil)
 
 
 #### Análises ####
 
-
 # Como é a superlotação por Estado?
 
-infopen
 
 # Como é a distribuição de vagas / pessoas presas por estado?
 
+infopen %>%
+  group_by(uf) %>%
+  mutate(
+    capacidade = capacidade_mas + capacidade_fem
+  ) %>%
+  summarise(
+    capacidade_total = sum(capacidade),
+    capacidade_media = mean(capacidade),
+    capacidade_mediana = mean(capacidade),
+    populacao_total = sum(populacao),
+    populacao_media = mean(populacao),
+    populacao_mediana = median(populacao)
+  )
+
+# Quantas unidades são superlotadas / diferença nessas unidades
+
+# Quanto da pop está em superlotação
+
+infopen %>%
+  group_by(superlotada) %>%
+  summarise(soma = sum(populacao))
+
 # Focando em SP:
 
+infopen_sp <- infopen %>%
+  filter(uf == "SP")
+
+graf_infopen_sp <- infopen_sp %>%
+  ggplot(aes(x = (capacidade_mas+capacidade_fem),
+             y = populacao))
+
+ggplot(infopen_sp) +
+  geom_histogram(aes(x = (capacidade_mas+capacidade_fem)))
+
+graf_infopen_sp +
+  geom_point(aes(color = superlotada)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~perfil)
+
+infopen_sp %>%
+  ggplot(aes(x = )) +
+  geom_histogram()
+
   # Quantos municípios possuem unidades prisionais
+
+infopen_sp %>%
+  group_by() %>%
+
+
+
   # Quantas pessoas presas
 
 
