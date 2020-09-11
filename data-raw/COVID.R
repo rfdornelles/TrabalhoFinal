@@ -1,6 +1,7 @@
 #### Ler arquivo ####
 
 #covid_original <- readxl::read_xlsx("data-raw/HIST_PAINEL_COVIDBR_06set2020.xlsx")
+
 library(dplyr)
 library(ggplot2)
 library(sf)
@@ -92,20 +93,28 @@ mapa_sp <- geobr::read_municipality(code_muni = "SP")
 
 # Maior/menor mortalidade, letalidade, incidencia
 
-mapa_sp %>%
-  left_join(covid_sp %>%
-               filter(data == max(data))) %>%
-  ggplot() +
-  geom_sf(aes(fill = incidencia))
-
-
-
-gera_mapa <- function(tabela, mapa = mapa_sp) {
+# Função para gerar os mapas
+gera_mapa <- function(tabela = covid_sp, mapa = mapa_sp) {
 
   mapa %>%
     left_join(tabela) %>%
     ggplot()
 
 }
+
+gera_mapa2 <- function(coluna, tabela = covid_sp, mapa = mapa_sp) {
+
+  mapa %>%
+    left_join(tabela) %>%
+    ggplot(mapping = aes(fill = {{coluna}})) +
+    geom_sf()
+
+}
+
+gera_mapa2(incidencia)
+
+
+
+
 
 
