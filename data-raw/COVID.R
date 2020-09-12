@@ -21,15 +21,18 @@ covid_original <- readr::read_rds(path = "data-raw/covid.rds")
 # Letalidade = N. de óbitos confirmados em relação ao total de casos
 # confirmados óbitos / casos confirmados * 100
 
-covid_original <- covid_original %>%
-  select(-codRegiaoSaude, -nomeRegiaoSaude, -Recuperadosnovos,
-         -emAcompanhamentoNovos, -obitosAcumulado_log2, -obitosNovos_log2) %>%
-  mutate(
-    incidencia = casosAcumulado / populacaoTCU2019 * 100000,
-    mortalidade = obitosAcumulado / populacaoTCU2019 * 100000,
-    letalidade = obitosAcumulado / casosAcumulado * 100,
-  )
+# covid_original <- covid_original %>%
+#   select(-codRegiaoSaude, -Recuperadosnovos,
+#          -emAcompanhamentoNovos, -obitosAcumulado_log2, -obitosNovos_log2) %>%
+#   mutate(
+#     incidencia = casosAcumulado / populacaoTCU2019 * 100000,
+#     mortalidade = obitosAcumulado / populacaoTCU2019 * 100000,
+#     letalidade = obitosAcumulado / casosAcumulado * 100,
+#   )
 
+covid_original <- covid_original %>%
+  select(-codRegiaoSaude, -Recuperadosnovos,
+         -emAcompanhamentoNovos, -obitosAcumulado_log2, -obitosNovos_log2)
 
 #### Dividir ####
 
