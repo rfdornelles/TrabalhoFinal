@@ -84,9 +84,10 @@ base <- base %>%
   )  %>%
   select(-hom_doloso, -hom_tentativa, -latrocinio, -lesao_corp_seg_morte)
 
-# Reunir os crimes de trânsito. Não sei se serão úteis pra análise,
-# mas de qualquer forma podem receber o mesmo tratamento por terem um eleme-
-# nto de não-intencionalidade
+# Reunir os crimes de trânsito. Embora existam modalidades tidas como
+# dolosas, em realidade estas são oriundas de dolo eventual. Portanto,
+# podem receber o mesmo tratamento por terem um elemento de
+# não-intencionalidade
 
 base <- base %>%
   rowwise(mes:delegacia_nome) %>%
@@ -96,16 +97,11 @@ base <- base %>%
   ungroup() %>%
   select(-contains("_transito"))
 
-# Reunir lesões corporais
+# Renomear lesão corporal dolosa. A culposa será incorporada aos acidentes
 
 base <- base %>%
-  rowwise(mes:delegacia_nome) %>%
-  mutate(
-    lesaocorporal = sum(c_across(contains("lesao_corp")))
-  ) %>%
-  ungroup() %>%
-  select(-contains("lesao_corp"))
-
+  rename(lesaocorporal = lesao_corp_dolosa,
+         lesaocorporal_culpa = lesao_corp_culposa_outras)
 
 # Renomear homicídios culposos
 base <- base %>%
@@ -115,3 +111,4 @@ base <- base %>%
 # Salvar no /data
 readr::write_rds(base, path = "data/ssp-arrumada.rds")
 
+rm(ssp, base)

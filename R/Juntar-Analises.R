@@ -1,6 +1,11 @@
+####################### ATENÇÃO #######################################
+# ATENÇÃO: a primeira parte do tratamento dos dados já foi feita, dando
+# origem às bases na pasta /data
+
+# SSP: /data-raw/SSP.R         --->   /data/ssp-arrumada.rds
+# COVID: /data-raw/COVID.R     --->   /data/COVID-sp.rds
+
 #### Início ####
-# O objetivo é analisar os dados da SSP e de COVID
-# Vermos se existe uma "pandemia" de criminalidade
 
 library(dplyr)
 library(ggplot2)
@@ -65,8 +70,8 @@ covid_sumarizada <- covid_sp %>%
 ## Além disso, vou agrupar os crimes em 4 categorias, segundo sua natureza
     # CVLI - CVLI (já agrupado)
     # patrimônio - roubo + furto
-    # contra_pessoa = estupro + lesão corporal
-    # acidentes = transito + hom_culposo
+    # contra_pessoa = estupro + lesão corporal dolosa
+    # acidentes = transito + hom_culposo + lesao corporal culposa
 
 ssp_sumarizada <- ssp %>%
 # 1. remover coluna inútil e renomear para facilitar o join
@@ -79,7 +84,7 @@ ssp_sumarizada <- ssp %>%
     CVLI = sum(CVLI),
     patrimonio = sum(roubos, furto),
     contra_pessoa = sum(estupro, lesaocorporal),
-    acidentes = sum(transito, homicidio_culposo)) %>%
+    acidentes = sum(transito, homicidio_culposo, lesaocorporal_culpa)) %>%
 # 4. pivotar para facilitar o facet_wrap
   tidyr::pivot_longer(cols = CVLI:acidentes,
                       names_to = "tipo_crime",
@@ -113,7 +118,7 @@ peso_quadrimestres <- ssp %>%
     CVLI = sum(CVLI),
     patrimonio = sum(roubos, furto),
     contra_pessoa = sum(estupro, lesaocorporal),
-    acidentes = sum(transito, homicidio_culposo)) %>%
+    acidentes = sum(transito, homicidio_culposo, lesaocorporal_culpa)) %>%
 # 4. Ver o quanto cada quadrimestre representa do todo
   summarise(
     CVLI = CVLI/sum(CVLI),
@@ -166,13 +171,5 @@ ssp_sumarizada_projecao <- ssp_sumarizada %>%
   select(-populacao) %>%
   ungroup()
 
-
-#### Remover bases anteriores ####
-rm(covid_sp, ssp)
-
-#### PRA FAZER ####
-# mostrar onde são as regiões
-
-## ver incidencia de crimes por habitantes
-## ver se faz sentido juntar por regiões - se há semelhança com covid
-##
+#### Remover bases sobressalente ####
+rm(ssp, covid_sp, peso_quadrimestres)
