@@ -19,10 +19,6 @@ covid_sp <- readr::read_rds("data/COVID-sp.rds")
 
 
 #### COVID - Análise ####
-
-
-#### Análises ####
-
 # incidência
 covid_sp %>%
   group_by(data) %>%
