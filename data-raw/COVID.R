@@ -107,7 +107,24 @@ gera_mapa2 <- function(coluna, tabela = covid_sp, mapa = mapa_sp) {
   mapa %>%
     left_join(tabela) %>%
     ggplot(mapping = aes(fill = {{coluna}})) +
-    geom_sf()
+    geom_sf() +
+    tema()
+
+
+}
+
+
+
+tema <- function() {
+
+      theme(panel.background =
+            element_rect(fill='#00001C',colour='#00001C'),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank())
 
 }
 
@@ -115,6 +132,36 @@ gera_mapa2(incidencia)
 
 
 
+
+### Analisar por município as respectivas taxas de incidência
+options(scipen = 999999)
+
+covid_sp %>%
+  group_by(municipio) %>%
+  ggplot(aes(x = data, y = incidencia, color = municipio)) +
+  geom_jitter() +
+
+
+  covid_sp %>%
+  filter(data == max(data)) %>%
+  gera_mapa2(cut(incidencia, 5), tabela = .)
+
+covid_sp %>%
+  filter(data == max(data)) %>%
+  arrange(-incidencia) %>%
+  relocate(municipio, incidencia)
+
+
+# Teste animação
+
+mapa_sp %>%
+  left_join(covid_sp) %>%
+  ggplot(mapping = aes(fill = cut(incidencia,5))) +
+  geom_sf() +
+  labs(caption = element_blank()) +
+
+
+  transition_states(semanaEpi)
 
 
 
