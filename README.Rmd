@@ -10,15 +10,26 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-# Rodar arquivo de análises
-source(file = "R/Juntar-Analises.R")
 ```
 
-# Crime e Covid[^1]: uma relação viral?
+```{r inicio, message=FALSE, warning=FALSE, include=FALSE}
+# Rodar arquivo de análises
+source(file = "R/Juntar-Analises.R")
+
+# Carregar bases originais
+ssp_original <- readr::read_rds("data-raw/ssp.rds")
+covid_original <- readr::read_rds("data-raw/covid.rds")
+
+# Rodar arquivo que traz parâmetros para os gráficos
+source(file = "R/Gerar-Mapas.R")
+```
+
+
+# CRIME E COVID[^1]: uma relação viral?
 
 [^1]: A ideia do nome veio de uma excelente matéria da [Revista piauí](https://piaui.folha.uol.com.br/crime-e-covid-no-rio/)
 
-## Apresentação
+## APRESENTAÇÃO
 
 O presente trabalho visa realizar uma singela análise sobre os índices de criminalidade no Estado de São Paulo e compará-los aos números da pandemia causada pela COVID-19.
 
@@ -31,27 +42,59 @@ Pretendemos verificar as consequências da pandemia (dentre eles, a breve quaren
 
 Ao final, queremos instigar a seguinte provocação na leitora e no leitor: as projeções e sonhos que temos para um "novo normal" não deveriam ter em mente, também, a "pandemia" de violência em nosso Estado?
 
-## Dados utilizados
+## DADOS UTILIZADOS
 
 Vamos analisar as bases :
 
 -   `COVID`, contendo [dados coletados e tratados pela equipe da Curso-R](https://www.youtube.com/watch?v=ja2AbTFN4yk&ab_channel=Curso-R) a partir de webscrap do [site do Ministério da Saúde](http://covid.saude.gov.br). Os dados estão atualizados 15/06/2020;
 -   `SSP`, oriundos da mesma Curso-R, com dados extraídos da [Secretaria de Segurança Pública de São Paulo](http://www.ssp.sp.gov.br/transparenciassp/Consulta.aspx). Os dados são de janeiro de 2002 até abril de 2020.
 
-## Metodologia
+## METODOLOGIA
 
-### 
+Ambas as bases, embora pré-processadas e em formato tidy, receberam tratamento a fim de torná-las comparáveis entre si. O detalhamento dos passos fica mais evidente nos comentários nos arquivos nas pastas `/R` e `/data-raw`, porém a seguir trazemos os aspectos mais significativos.
 
-```{r cars}
-summary(cars)
+### *Tratamento dos dados da COVID*
+
+Os dados foram restritos ao estado de São Paulo e foram removidas variáveis como a quantidade de novos casos, casos recuperados, etc, uma vez que o foco da análise se deu sobre dois indicadores:
+
+-   **Incidência de casos**: ou seja, a quantidade de casos confirmados por 100 mil habitantes
+
+-   **Mortalidade** (ou incidência de mortes): a quantidade de óbitos confirmados por 100 mil habitantes
+
+|    Variáveis originais    |       Variáveis finais      |
+|:-------------------------:|:---------------------------:|
+| `r names(covid_original)` | `r names(covid_sumarizada)` |
+
+### *Tratamento dos dados da SSP*
+
+A base originalmente continha variáveis em sub-espécies dos crimes cometidos, separando por exemplo homicídios de homicídios culposos. Para melhor aproveitamento dos dados, considerando os bens jurídicos inerentes a cada tipo penal, as hipóteses originais foram dividas em quatro grupos:
+
+-   **Crimes Violentos Letais Intencionais (CVLI)**: reunindo homicídios dolosos, latrocínio (também chamado de roubo seguido de morte) e lesão corporal seguida de morte. Para fins desse estudo, se incluiu nesse grupo também os homicídios tentados (que, por definição, são intencionais), ainda que o óbito não tenha necessariamente ocorrido.
+
+-   **Crimes contra o patrimônio**: Reunindo roubos (exceto se resultantes em óbito) e furtos (de qualquer tipo).
+
+-   **Outros crimes contra a pessoa**: Reunindo estupros (em todas as modalidades) e lesões corporais. Sabe-se que ambos possuem grande diferença quanto aos contextos criminológicos em que ocorrem, porém apenas e exclusivamente para fins metodológicos fez sentido agrupá-los aquo.
+
+-   **Acidentes penalmente relevantes:** Agrupou-se os crimes de trânsito (inclusive as modalidades dolosas), lesões corporais culposas e homicídios culposos. Da mesma forma que no caso anterior, a proposta é unicamente didática, tendo em mente que todos os crimes aqui descritos possuem um aspecto subjetivamente não-intencional, mesmo nos casos de dolo eventual.
+
+|   Variáveis originais   |      Variáveis finais     |
+|:-----------------------:|:-------------------------:|
+| `r names(ssp_original)` | `r names(ssp_sumarizada)` |
+
+### Convergência dos dados
+
+A fim de que se pudesse tornar os dados estudados comparáveis em algumas medidas, adotou-se os seguintes padrões:
+
+-   Os dados de **população**, oriundos das projeções do Tribunal de Contas da União (TCU) para 2019, foram aproveitados para ambas as bases. Elas vieram originalmente na base `COVID` e foi daptada para a base `SSP`.
+
+-   Como as bases possuiam recortes temporais distintos, os dados de segurança da `SSP`foram *projetados até o final do an*o, considerando as tendências até abril/2020.
+
+-   As **regiões** da Segurança Pública (base SSP) foram aproveitadas também para os dados da pandemia (base COVID). Assim, os dados foram apresentados considerando as mesmas 12 regiões.
+
+`r ssp_sumarizada_projecao %>% filter (!is.na(regiao)) %>% pull(regiao) %>% unique() %>% knitr::kable(col.names = "Regiões Utilizadas", align = "c")`
+
+```{r regioes, echo=FALSE, message=FALSE, warning=FALSE}
+
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+## sss

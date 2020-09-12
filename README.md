@@ -1,9 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Crime e Covid\[1\]: uma relação viral?
+# CRIME E COVID\[1\]: uma relação viral?
 
-## Apresentação
+## APRESENTAÇÃO
 
 O presente trabalho visa realizar uma singela análise sobre os índices
 de criminalidade no Estado de São Paulo e compará-los aos números da
@@ -29,7 +29,7 @@ leitor: as projeções e sonhos que temos para um “novo normal” não
 deveriam ter em mente, também, a “pandemia” de violência em nosso
 Estado?
 
-## Dados utilizados
+## DADOS UTILIZADOS
 
 Vamos analisar as bases :
 
@@ -43,70 +43,97 @@ Vamos analisar as bases :
     Paulo](http://www.ssp.sp.gov.br/transparenciassp/Consulta.aspx). Os
     dados são de janeiro de 2002 até abril de 2020.
 
-## Metodologia
+## METODOLOGIA
 
-### 
+Ambas as bases, embora pré-processadas e em formato tidy, receberam
+tratamento a fim de torná-las comparáveis entre si. O detalhamento dos
+passos fica mais evidente nos comentários nos arquivos nas pastas `/R` e
+`/data-raw`, porém a seguir trazemos os aspectos mais significativos.
 
-``` r
-summary(cars)
-#> Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, : NAs
-#> introduced by coercion to integer range
-#> Warning in format.default(names(sms)): NAs introduced by coercion to integer
-#> range
-#> Warning in paste0(lbs, ":", sms, " "): NAs introduced by coercion to integer
-#> range
-#> Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, : NAs
-#> introduced by coercion to integer range
-#> Warning in format.default(names(sms)): NAs introduced by coercion to integer
-#> range
-#> Warning in paste0(lbs, ":", sms, " "): NAs introduced by coercion to integer
-#> range
-#> Warning in paste(character(max(lw, na.rm = TRUE) + 2L), collapse = " "): NAs
-#> introduced by coercion to integer range
-#> Warning in paste0(substring(blanks, 1, pad), nm): NAs introduced by coercion to
-#> integer range
-#> Warning in format.default(unclass(x), digits = digits, justify = justify): NAs
-#> introduced by coercion to integer range
-#> Warning in print.default(xx, quote = quote, right = right, ...): NAs introduced
-#> by coercion to integer range
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-#> Warning in print.default(xx, quote = quote, right = right, ...): NAs introduced
-#> by coercion to integer range
-```
+### *Tratamento dos dados da COVID*
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
+Os dados foram restritos ao estado de São Paulo e foram removidas
+variáveis como a quantidade de novos casos, casos recuperados, etc, uma
+vez que o foco da análise se deu sobre dois indicadores:
 
-You can also embed plots, for example:
+  - **Incidência de casos**: ou seja, a quantidade de casos confirmados
+    por 100 mil habitantes
 
-    #> Warning in deparse(x[[1L]]): NAs introduced by coercion to integer range
-    #> Warning in deparse(expr, width.cutoff, ...): NAs introduced by coercion to
-    #> integer range
-    #> Warning in paste(deparse(expr, width.cutoff, ...), collapse = collapse): NAs
-    #> introduced by coercion to integer range
-    #> Warning in deparse(x[[1L]]): NAs introduced by coercion to integer range
-    #> Warning in deparse(expr, width.cutoff, ...): NAs introduced by coercion to
-    #> integer range
-    #> Warning in paste(deparse(expr, width.cutoff, ...), collapse = collapse): NAs
-    #> introduced by coercion to integer range
-    #> Warning in paste(x[c("major", "minor")], collapse = "."): NAs introduced by
-    #> coercion to integer range
-    #> Warning in axis(side = side, at = at, labels = labels, ...): NAs introduced by
-    #> coercion to integer range
-    
-    #> Warning in axis(side = side, at = at, labels = labels, ...): NAs introduced by
-    #> coercion to integer range
+  - **Mortalidade** (ou incidência de mortes): a quantidade de óbitos
+    confirmados por 100 mil habitantes
 
-![](README_files/figure-gfm/pressure-1.png)<!-- -->
+|                                                                                                                               Variáveis originais                                                                                                                                |         Variáveis finais          |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------: |
+| regiao, estado, municipio, coduf, codmun, codRegiaoSaude, nomeRegiaoSaude, data, semanaEpi, populacaoTCU2019, casosAcumulado, casosNovos, obitosAcumulado, obitosNovos, Recuperadosnovos, emAcompanhamentoNovos, eh\_capital, obitosAcumulado\_log2, obitosNovos\_log2, lat, lon | regiao, mes, variavel, quantidade |
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub\!
+### *Tratamento dos dados da SSP*
+
+A base originalmente continha variáveis em sub-espécies dos crimes
+cometidos, separando por exemplo homicídios de homicídios culposos. Para
+melhor aproveitamento dos dados, considerando os bens jurídicos
+inerentes a cada tipo penal, as hipóteses originais foram dividas em
+quatro grupos:
+
+  - **Crimes Violentos Letais Intencionais (CVLI)**: reunindo homicídios
+    dolosos, latrocínio (também chamado de roubo seguido de morte) e
+    lesão corporal seguida de morte. Para fins desse estudo, se incluiu
+    nesse grupo também os homicídios tentados (que, por definição, são
+    intencionais), ainda que o óbito não tenha necessariamente ocorrido.
+
+  - **Crimes contra o patrimônio**: Reunindo roubos (exceto se
+    resultantes em óbito) e furtos (de qualquer tipo).
+
+  - **Outros crimes contra a pessoa**: Reunindo estupros (em todas as
+    modalidades) e lesões corporais. Sabe-se que ambos possuem grande
+    diferença quanto aos contextos criminológicos em que ocorrem, porém
+    apenas e exclusivamente para fins metodológicos fez sentido
+    agrupá-los aquo.
+
+  - **Acidentes penalmente relevantes:** Agrupou-se os crimes de
+    trânsito (inclusive as modalidades dolosas), lesões corporais
+    culposas e homicídios culposos. Da mesma forma que no caso anterior,
+    a proposta é unicamente didática, tendo em mente que todos os crimes
+    aqui descritos possuem um aspecto subjetivamente não-intencional,
+    mesmo nos casos de dolo eventual.
+
+|                                                                                                                                                                                                                                                               Variáveis originais                                                                                                                                                                                                                                                                |                  Variáveis finais                   |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------: |
+| mes, ano, delegacia\_nome, municipio\_nome, regiao\_nome, estupro, estupro\_total, estupro\_vulneravel, furto\_outros, furto\_veiculos, hom\_culposo\_acidente\_transito, hom\_culposo\_outros, hom\_doloso, hom\_doloso\_acidente\_transito, hom\_tentativa, latrocinio, lesao\_corp\_culposa\_acidente\_transito, lesao\_corp\_culposa\_outras, lesao\_corp\_dolosa, lesao\_corp\_seg\_morte, roubo\_banco, roubo\_carga, roubo\_outros, roubo\_total, roubo\_veiculo, vit\_hom\_doloso, vit\_hom\_doloso\_acidente\_transito, vit\_latrocinio | ano, regiao, tipo\_crime, quantidade, qnt\_relativa |
+
+### Convergência dos dados
+
+A fim de que se pudesse tornar os dados estudados comparáveis em algumas
+medidas, adotou-se os seguintes padrões:
+
+  - Os dados de **população**, oriundos das projeções do Tribunal de
+    Contas da União (TCU) para 2019, foram aproveitados para ambas as
+    bases. Elas vieram originalmente na base `COVID` e foi daptada para
+    a base `SSP`.
+
+  - Como as bases possuiam recortes temporais distintos, os dados de
+    segurança da `SSP`foram *projetados até o final do an*o,
+    considerando as tendências até abril/2020.
+
+  - As **regiões** da Segurança Pública (base SSP) foram aproveitadas
+    também para os dados da pandemia (base COVID). Assim, os dados foram
+    apresentados considerando as mesmas 12 regiões.
+
+|  Regiões Utilizadas   |
+| :-------------------: |
+|       Araçatuba       |
+|         Bauru         |
+|       Campinas        |
+|        Capital        |
+|   Grande São Paulo    |
+|      Piracicaba       |
+|  Presidente Prudente  |
+|    Ribeirão Preto     |
+|        Santos         |
+| São José do Rio Preto |
+|  São José dos Campos  |
+|       Sorocaba        |
+
+## sss
 
 1.  A ideia do nome veio de uma excelente matéria da [Revista
     piauí](https://piaui.folha.uol.com.br/crime-e-covid-no-rio/)
