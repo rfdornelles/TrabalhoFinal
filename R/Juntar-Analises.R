@@ -23,7 +23,7 @@ tabela_auxiliar <- ssp %>%
   select(municipio = municipio_nome, regiao = regiao_nome) %>%
   unique() %>%
   left_join(covid_sp %>%
-              select(municipio, populacao = populacaoTCU2019) %>%
+              select(municipio, populacao = populacaoTCU2019, code_muni) %>%
               unique) %>%
   mutate(
     populacao = if_else(is.na(populacao), 0, populacao)
@@ -40,7 +40,7 @@ covid_sumarizada <- covid_sp %>%
 # 1. reunir com a tabela auxiliar para obter a mesma região que vai ser
 # usada na SSP - reduz para 12+NA regiões
   left_join(tabela_auxiliar %>%
-              select(-populacao)) %>%
+              select(-populacao, -code_muni)) %>%
   relocate(regiao) %>%
 # 2. organizo por mês (ano vai ser sempre 2020), sendo que o último dia do
 # mês representa aquele total (afinal, os dados são acumulados)
