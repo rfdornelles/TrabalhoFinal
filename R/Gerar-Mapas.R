@@ -1,6 +1,11 @@
+library(patchwork)
 #### Mapa de SP ####
 mapa_sp <- geobr::read_municipality(code_muni = "SP")
+readr::write_rds(mapa_sp, "data/mapa_sp.rds")
 
+#### Mapa do BR
+mapa_br <- geobr::read_state()
+readr::write_rds(mapa_br, "data/mapa_br.rds")
 #### Funções de mapa ####
 
 tema <- function() {
