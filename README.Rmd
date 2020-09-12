@@ -4,12 +4,18 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r setup, include = FALSE, echo= FALSE}
+```{r setup, include = FALSE, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
+```
+
+```{r to-do, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+## Acrescentar labels no mapa das regiões
+## Melhorar o fundo: tem que ser branco ou transparente
+## Tentar usar gifs
 ```
 
 ```{r inicio, message=FALSE, warning=FALSE, include=FALSE}
@@ -24,8 +30,7 @@ covid_original <- readr::read_rds("data-raw/covid.rds")
 source(file = "R/Gerar-Mapas.R")
 ```
 
-
-# CRIME E COVID[^1]: uma relação viral?
+# CRIME E COVID: uma relação viral? [^1]
 
 [^1]: A ideia do nome veio de uma excelente matéria da [Revista piauí](https://piaui.folha.uol.com.br/crime-e-covid-no-rio/)
 
@@ -35,10 +40,13 @@ O presente trabalho visa realizar uma singela análise sobre os índices de crim
 
 Pretendemos verificar as consequências da pandemia (dentre eles, a breve quarentena que se verificou no estado) e levantar algumas reflexões sobre os impactos da violência. Dentre as perguntas que se pretende refletir (mas sem a pretensão de oferecer respostas):
 
-1.  Qual é, em linhas gerais, a tendência de evolução da incidência criminal em SP? Os crimes têm, ao longo das últimas décadas diminuído ou aumentado?
-2.  É possível visualizar tendências nas diferentes regiões da cidade?
-3.  Como foi o comportamento dessas tendências durante os meses em que a quarentena em SP foram mais intensas? Houve padrão nos distintos tipos de crime e nas distintas regiões?
-4.  Se houve comportamento fora do padrão ou inesperado, quais poderiam ser as razões?
+I.  *Qual é, em linhas gerais, a **tendência de evolução** da incidência criminal em SP? Os crimes têm, ao longo das últimas décadas **diminuído** ou **aumentado**?*
+
+II. *É possível visualizar **tendências** nas diferentes regiões da cidade*?
+
+III. *Como foi o comportamento dessas tendências **durante os meses em que a quarentena** em SP foi mais intensa*? *Houve **padrão** nos distintos tipos de crime e nas distintas regiões*?
+
+IV. S*e houve comportamento fora do padrão ou **inesperado**, quais poderiam ser as razões*?
 
 Ao final, queremos instigar a seguinte provocação na leitora e no leitor: as projeções e sonhos que temos para um "novo normal" não deveriam ter em mente, também, a "pandemia" de violência em nosso Estado?
 
@@ -51,11 +59,11 @@ Vamos analisar as bases :
 
 ## METODOLOGIA
 
-Ambas as bases, embora pré-processadas e em formato tidy, receberam tratamento a fim de torná-las comparáveis entre si. O detalhamento dos passos fica mais evidente nos comentários nos arquivos nas pastas `/R` e `/data-raw`, porém a seguir trazemos os aspectos mais significativos.
+Ambas as bases, embora pré-processadas e em formato *tidy*, receberam tratamento a fim de torná-las comparáveis entre si. O detalhamento dos passos fica mais evidente nos comentários nos arquivos nas pastas `/R` e `/data-raw`, porém a seguir trazemos os aspectos mais significativos.
 
 ### *Tratamento dos dados da COVID*
 
-Os dados foram restritos ao estado de São Paulo e foram removidas variáveis como a quantidade de novos casos, casos recuperados, etc, uma vez que o foco da análise se deu sobre dois indicadores:
+Os dados foram restritos ao estado de **São Paulo** e foram removidas variáveis como a quantidade de novos casos, casos recuperados, etc, uma vez que o foco da análise se deu sobre dois indicadores:
 
 -   **Incidência de casos**: ou seja, a quantidade de casos confirmados por 100 mil habitantes
 
@@ -64,6 +72,8 @@ Os dados foram restritos ao estado de São Paulo e foram removidas variáveis co
 |    Variáveis originais    |       Variáveis finais      |
 |:-------------------------:|:---------------------------:|
 | `r names(covid_original)` | `r names(covid_sumarizada)` |
+
+: *Tab 1. Variáveis da base de dados COVID antes e depois do tratamento*
 
 ### *Tratamento dos dados da SSP*
 
@@ -81,6 +91,8 @@ A base originalmente continha variáveis em sub-espécies dos crimes cometidos, 
 |:-----------------------:|:-------------------------:|
 | `r names(ssp_original)` | `r names(ssp_sumarizada)` |
 
+: *Tab 2. Variáveis da base SSP antes e após tratamento*
+
 ### Convergência dos dados
 
 A fim de que se pudesse tornar os dados estudados comparáveis em algumas medidas, adotou-se os seguintes padrões:
@@ -89,12 +101,113 @@ A fim de que se pudesse tornar os dados estudados comparáveis em algumas medida
 
 -   Como as bases possuiam recortes temporais distintos, os dados de segurança da `SSP`foram *projetados até o final do an*o, considerando as tendências até abril/2020.
 
--   As **regiões** da Segurança Pública (base SSP) foram aproveitadas também para os dados da pandemia (base COVID). Assim, os dados foram apresentados considerando as mesmas 12 regiões.
+-   As **regiões** da Segurança Pública (base `SSP`) foram aproveitadas também para os dados da pandemia (base `COVID`). Assim, os dados foram apresentados considerando as mesmas 12 regiões.
 
-`r ssp_sumarizada_projecao %>% filter (!is.na(regiao)) %>% pull(regiao) %>% unique() %>% knitr::kable(col.names = "Regiões Utilizadas", align = "c")`
+```{r tabela_regioes, echo=FALSE, fig.width=30, message=FALSE, warning=FALSE, paged.print=FALSE}
+ssp_sumarizada_projecao %>% filter (!is.na(regiao)) %>% pull(regiao) %>% unique() %>% knitr::kable(col.names = "Regiões Utilizadas", align = "c")
+```
 
 ```{r regioes, echo=FALSE, message=FALSE, warning=FALSE}
 
+# Usa a função que cria mapas
+
+gera_mapa2(coluna = regiao, tabela = tabela_auxiliar)
+##### INCLUIR LABEL COM NOME NAS REGIÕES
+
 ```
 
-## sss
+## ESTADO DE SÃO PAULO E A COVID-19 
+
+### Situação da COVID no Brasil
+Como é sabido, o Brasil chegou rapidamente aos países com mais casos no mundo. Ao contrário do que se disse, esse número não se deu unicamente em razão da grandeza de sua população.
+
+### SP como epicentro nacional
+Por outro lado, o Estado de São Paulo foi por muito tempo o "epicentro" da pandemia no país. Além de sua alta população, possivelmente houve influência da sua alta urbanização dentre muitos outros fatores.
+
+### Bla bla bla
+
+
+```{r graficos_covid_sp, eval=FALSE, include=FALSE}
+
+# Criar os gráficos
+casos_nacional <- covid_original %>% 
+  filter(regiao != "Brasil", !is.na(estado), is.na(municipio)) %>% 
+  group_by(data, regiao) %>% 
+  summarise(casosAcumulado = sum(casosAcumulado)) %>% 
+  ggplot(aes(x = data, y = casosAcumulado, 
+             color = regiao)) +
+  geom_line() +
+  scale_y_log10()
+
+obitos_nacional <- covid_original %>% 
+  filter(regiao != "Brasil", !is.na(estado), is.na(municipio)) %>% 
+  group_by(data, regiao) %>% 
+  summarise(obitosAcumulado = sum(obitosAcumulado)) %>% 
+  ggplot(aes(x = data, y = obitosAcumulado, 
+             color = regiao)) +
+  geom_line() +
+  scale_y_log10()
+
+incidencia <- covid_sumarizada %>%
+  filter(variavel == "incidencia") %>% 
+  group_by(mes) %>%
+  summarise(soma = sum(quantidade)) %>%
+  ggplot(aes(x = mes, y = soma)) +
+  geom_line()
+
+mortalidade <- covid_sumarizada %>%
+  filter(variavel == "mortalidade") %>% 
+  group_by(mes) %>%
+  summarise(soma = sum(quantidade)) %>%
+  ggplot(aes(x = mes, y = soma)) +
+  geom_line()
+
+# Criar os mapas
+
+
+
+# Dispor os gráficos
+
+
+```
+
+
+## O CRIME E O ESTADO DE SÃO PAULO
+
+### Tendências
+
+São Paulo, crimes, bla bla bla
+Tendência de queda por diversos fatores
+
+### Criminalidade durante a pandemia
+
+#### Quarentena
+Durou em especial nos primeiros meses
+
+Qual impacto teve nos índices?
+
+#### Perguntas importantes
+
+Houve diminuição ou aumento dos crimes?
+
+Houve diminuição das ocorrências de crimes contra o patrimônio?
+
+Lesões corporais e estupros - como foram? pessoas em casa
+
+Acidentes de carro - diminuição da circulação, fechamento dos bares, lojas de conveniência, etc
+
+Mas e os CVLI? Qual o impacto? Esses tendem a ter menos subnotificação
+
+Levantar o ponto da letalidade policial
+
+#### Regiões que tiveram aumento
+
+Explicações para isso
+
+## Incidências de crime
+
+Temos regiões com mais crime que covid?
+
+Temos uma pandemia de violência?
+
+## Notas

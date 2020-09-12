@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CRIME E COVID\[1\]: uma relação viral?
+# CRIME E COVID: uma relação viral? \[1\]
 
 ## APRESENTAÇÃO
 
@@ -14,15 +14,19 @@ quarentena que se verificou no estado) e levantar algumas reflexões
 sobre os impactos da violência. Dentre as perguntas que se pretende
 refletir (mas sem a pretensão de oferecer respostas):
 
-1.  Qual é, em linhas gerais, a tendência de evolução da incidência
+1.  *Qual é, em linhas gerais, a **tendência de evolução** da incidência
     criminal em SP? Os crimes têm, ao longo das últimas décadas
-    diminuído ou aumentado?
-2.  É possível visualizar tendências nas diferentes regiões da cidade?
-3.  Como foi o comportamento dessas tendências durante os meses em que a
-    quarentena em SP foram mais intensas? Houve padrão nos distintos
-    tipos de crime e nas distintas regiões?
-4.  Se houve comportamento fora do padrão ou inesperado, quais poderiam
-    ser as razões?
+    **diminuído** ou **aumentado**?*
+
+2.  *É possível visualizar **tendências** nas diferentes regiões da
+    cidade*?
+
+3.  *Como foi o comportamento dessas tendências **durante os meses em
+    que a quarentena** em SP foi mais intensa*? *Houve **padrão** nos
+    distintos tipos de crime e nas distintas regiões*?
+
+4.  S*e houve comportamento fora do padrão ou **inesperado**, quais
+    poderiam ser as razões*?
 
 Ao final, queremos instigar a seguinte provocação na leitora e no
 leitor: as projeções e sonhos que temos para um “novo normal” não
@@ -45,14 +49,14 @@ Vamos analisar as bases :
 
 ## METODOLOGIA
 
-Ambas as bases, embora pré-processadas e em formato tidy, receberam
+Ambas as bases, embora pré-processadas e em formato *tidy*, receberam
 tratamento a fim de torná-las comparáveis entre si. O detalhamento dos
 passos fica mais evidente nos comentários nos arquivos nas pastas `/R` e
 `/data-raw`, porém a seguir trazemos os aspectos mais significativos.
 
 ### *Tratamento dos dados da COVID*
 
-Os dados foram restritos ao estado de São Paulo e foram removidas
+Os dados foram restritos ao estado de **São Paulo** e foram removidas
 variáveis como a quantidade de novos casos, casos recuperados, etc, uma
 vez que o foco da análise se deu sobre dois indicadores:
 
@@ -65,6 +69,8 @@ vez que o foco da análise se deu sobre dois indicadores:
 |                                                                                                                               Variáveis originais                                                                                                                                |         Variáveis finais          |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------: |
 | regiao, estado, municipio, coduf, codmun, codRegiaoSaude, nomeRegiaoSaude, data, semanaEpi, populacaoTCU2019, casosAcumulado, casosNovos, obitosAcumulado, obitosNovos, Recuperadosnovos, emAcompanhamentoNovos, eh\_capital, obitosAcumulado\_log2, obitosNovos\_log2, lat, lon | regiao, mes, variavel, quantidade |
+
+*Tab 1. Variáveis da base de dados COVID antes e depois do tratamento*
 
 ### *Tratamento dos dados da SSP*
 
@@ -100,6 +106,8 @@ quatro grupos:
 | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------: |
 | mes, ano, delegacia\_nome, municipio\_nome, regiao\_nome, estupro, estupro\_total, estupro\_vulneravel, furto\_outros, furto\_veiculos, hom\_culposo\_acidente\_transito, hom\_culposo\_outros, hom\_doloso, hom\_doloso\_acidente\_transito, hom\_tentativa, latrocinio, lesao\_corp\_culposa\_acidente\_transito, lesao\_corp\_culposa\_outras, lesao\_corp\_dolosa, lesao\_corp\_seg\_morte, roubo\_banco, roubo\_carga, roubo\_outros, roubo\_total, roubo\_veiculo, vit\_hom\_doloso, vit\_hom\_doloso\_acidente\_transito, vit\_latrocinio | ano, regiao, tipo\_crime, quantidade, qnt\_relativa |
 
+*Tab 2. Variáveis da base SSP antes e após tratamento*
+
 ### Convergência dos dados
 
 A fim de que se pudesse tornar os dados estudados comparáveis em algumas
@@ -114,9 +122,9 @@ medidas, adotou-se os seguintes padrões:
     segurança da `SSP`foram *projetados até o final do an*o,
     considerando as tendências até abril/2020.
 
-  - As **regiões** da Segurança Pública (base SSP) foram aproveitadas
-    também para os dados da pandemia (base COVID). Assim, os dados foram
-    apresentados considerando as mesmas 12 regiões.
+  - As **regiões** da Segurança Pública (base `SSP`) foram aproveitadas
+    também para os dados da pandemia (base `COVID`). Assim, os dados
+    foram apresentados considerando as mesmas 12 regiões.
 
 |  Regiões Utilizadas   |
 | :-------------------: |
@@ -133,7 +141,64 @@ medidas, adotou-se os seguintes padrões:
 |  São José dos Campos  |
 |       Sorocaba        |
 
-## sss
+![](README_files/figure-gfm/regioes-1.png)<!-- -->
+
+## ESTADO DE SÃO PAULO E A COVID-19
+
+### Situação da COVID no Brasil
+
+Como é sabido, o Brasil chegou rapidamente aos países com mais casos no
+mundo. Ao contrário do que se disse, esse número não se deu unicamente
+em razão da grandeza de sua população.
+
+### SP como epicentro nacional
+
+Por outro lado, o Estado de São Paulo foi por muito tempo o “epicentro”
+da pandemia no país. Além de sua alta população, possivelmente houve
+influência da sua alta urbanização dentre muitos outros fatores.
+
+### Bla bla bla
+
+## O CRIME E O ESTADO DE SÃO PAULO
+
+### Tendências
+
+São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
+
+### Criminalidade durante a pandemia
+
+#### Quarentena
+
+Durou em especial nos primeiros meses
+
+Qual impacto teve nos índices?
+
+#### Perguntas importantes
+
+Houve diminuição ou aumento dos crimes?
+
+Houve diminuição das ocorrências de crimes contra o patrimônio?
+
+Lesões corporais e estupros - como foram? pessoas em casa
+
+Acidentes de carro - diminuição da circulação, fechamento dos bares,
+lojas de conveniência, etc
+
+Mas e os CVLI? Qual o impacto? Esses tendem a ter menos subnotificação
+
+Levantar o ponto da letalidade policial
+
+#### Regiões que tiveram aumento
+
+Explicações para isso
+
+## Incidências de crime
+
+Temos regiões com mais crime que covid?
+
+Temos uma pandemia de violência?
+
+## Notas
 
 1.  A ideia do nome veio de uma excelente matéria da [Revista
     piauí](https://piaui.folha.uol.com.br/crime-e-covid-no-rio/)
