@@ -13,9 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
+
 # TrabalhoFinal
 
 [Olhar aqui referências de mapas](https://github.com/cienciadedatos/datos-de-miercoles/blob/master/30-dias-de-graficos-2020.md)
+
+Vamos olhar dados da COVID e da criminalidade Saber a diferença de incidência em cada cidade
+
+O crime é pandêmico? Crime e Covid (copiei o nome da piauí)
 
 <!-- badges: start -->
 
