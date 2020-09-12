@@ -1,12 +1,11 @@
 #### Ler arquivo ####
 
-#covid_original <- readxl::read_xlsx("data-raw/HIST_PAINEL_COVIDBR_06set2020.xlsx")
+#covid_original <- readxl::read_xlsx(
+#"data-raw/HIST_PAINEL_COVIDBR_06set2020.xlsx")
 
 library(dplyr)
-library(ggplot2)
-library(sf)
 
-covid_original <- readr::read_rds(path = "data/covid.rds")
+covid_original <- readr::read_rds(path = "data-raw/covid.rds")
 
 
 #### Organizar ####
@@ -19,8 +18,8 @@ covid_original <- readr::read_rds(path = "data/covid.rds")
 # Mortalidade = Número de óbitos por doenças COVID-19, por 100 mil habitantes
 # óbitos / população * 100.000
 
-# Letalidade = N. de óbitos confirmados em relação ao total de casos confirmados
-# óbitos / casos confirmados * 100
+# Letalidade = N. de óbitos confirmados em relação ao total de casos
+# confirmados óbitos / casos confirmados * 100
 
 covid_original <- covid_original %>%
   select(-codRegiaoSaude, -nomeRegiaoSaude, -Recuperadosnovos,
@@ -61,107 +60,9 @@ covid_sp <- covid_sp %>%
   mutate(code_muni = MUNCODDV) %>%
   select(-MUNCODDV, -codmun)
 
-#### Análises ####
 
-# incidência
-covid_sp %>%
-  group_by(data) %>%
-  arrange(data) %>%
-  summarise(data, soma = sum(incidencia)) %>%
-  ggplot(aes(x = data, y = soma)) +
-  geom_line()
+#### Exportar ####
+# Apenas os dados de SP
 
-# mortalidade
-covid_sp %>%
-  group_by(data) %>%
-  arrange(data) %>%
-  summarise(data, soma = sum(mortalidade)) %>%
-  ggplot(aes(x = data, y = soma)) +
-  geom_line()
-
-# letalidade
-covid_sp %>%
-  filter(is.numeric(letalidade) & !is.na(letalidade)) %>%
-  group_by(data) %>%
-  arrange(data) %>%
-  summarise(data, soma = sum(letalidade)) %>%
-  ggplot(aes(x = data, y = soma)) +
-  geom_line()
-
-# Mapa SP
-mapa_sp <- geobr::read_municipality(code_muni = "SP")
-
-# Maior/menor mortalidade, letalidade, incidencia
-
-# Função para gerar os mapas
-gera_mapa <- function(tabela = covid_sp, mapa = mapa_sp) {
-
-  mapa %>%
-    left_join(tabela) %>%
-    ggplot()
-
-}
-
-gera_mapa2 <- function(coluna, tabela = covid_sp, mapa = mapa_sp) {
-
-  mapa %>%
-    left_join(tabela) %>%
-    ggplot(mapping = aes(fill = {{coluna}})) +
-    geom_sf() +
-    tema()
-
-
-}
-
-
-
-tema <- function() {
-
-      theme(panel.background =
-            element_rect(fill='#00001C',colour='#00001C'),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.line=element_blank(),axis.text.x=element_blank(),
-          axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank())
-
-}
-
-gera_mapa2(incidencia)
-
-
-
-
-### Analisar por município as respectivas taxas de incidência
-options(scipen = 999999)
-
-covid_sp %>%
-  group_by(municipio) %>%
-  ggplot(aes(x = data, y = incidencia, color = municipio)) +
-  geom_jitter() +
-
-
-  covid_sp %>%
-  filter(data == max(data)) %>%
-  gera_mapa2(cut(incidencia, 5), tabela = .)
-
-covid_sp %>%
-  filter(data == max(data)) %>%
-  arrange(-incidencia) %>%
-  relocate(municipio, incidencia)
-
-
-# Teste animação
-
-mapa_sp %>%
-  left_join(covid_sp) %>%
-  ggplot(mapping = aes(fill = cut(incidencia,5))) +
-  geom_sf() +
-  labs(caption = element_blank()) +
-
-
-  transition_states(semanaEpi)
-
-
+readr::write_rds(covid_sp, "data/COVID-sp.rds")
 
