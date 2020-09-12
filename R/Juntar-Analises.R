@@ -96,7 +96,79 @@ ssp_sumarizada <- ssp %>%
   select(-populacao) %>%
   ungroup()
 
+#### SSP - Problema ####
+# Eu só tenho os dados de criminalidade até abril
+# Farei uma projeção verificando o peso do primeiro quadrimestre (jan-abr)
+# no total dos meses e depois multiplicando com uma regra de três essa
+# quantidade, para projetar esses valores no fim do ano
 
+## Calcular os pesos
+peso_quadrimestres <- ssp %>%
+# 1. Retiro o ano de 2020 da conta
+  filter(ano < 2020) %>%
+# 2. Agrupo por meses, em intervalos de 4 meses (quadrimestral)
+  group_by(mes = ggplot2::cut_interval(mes, length = 4)) %>%
+# 3. Somar a quantidade de ocorrências por quadrimestre
+  summarise(
+    CVLI = sum(CVLI),
+    patrimonio = sum(roubos, furto),
+    contra_pessoa = sum(estupro, lesaocorporal),
+    acidentes = sum(transito, homicidio_culposo)) %>%
+# 4. Ver o quanto cada quadrimestre representa do todo
+  summarise(
+    CVLI = CVLI/sum(CVLI),
+    patrimonio = patrimonio/sum(patrimonio),
+    contra_pessoa = contra_pessoa/sum(contra_pessoa),
+    acidentes = acidentes/sum(acidentes)
+  ) %>%
+# 5. Selecionar apenas o primeiro quadrimestre
+  head(1)
+
+## Projetar o valor final de 2020 com base no primeiro quadrimestre
+# Estou entendendo que posso fazer a conta com:
+# valor_final_do_ano(Q3) = valor_do_Q1 / peso_do_Q1
+
+
+ssp_sumarizada_projecao <- ssp_sumarizada %>%
+# 1. Retirar a quantidade relativa para que ela volte ao final e não dê
+# problemas na pivotagem
+  select(-qnt_relativa) %>%
+# 2. Pivotar de volta para poder trabalhar com as colunas
+  tidyr::pivot_wider(names_from = tipo_crime,
+                     values_from = quantidade) %>%
+# 3. Agrupar por ano e região
+  group_by(ano, regiao) %>%
+# 4. Usar o mutate para, com if_else caso o ano seja 2020 recalcular o valor
+# final com base na proporção do primeiro quadrimestre.
+  mutate(
+    CVLI = if_else(ano == 2020,
+           CVLI / peso_quadrimestres$CVLI, CVLI),
+    patrimonio = if_else(ano == 2020,
+           patrimonio / peso_quadrimestres$patrimonio, patrimonio),
+    contra_pessoa = if_else(ano == 2020,
+          contra_pessoa / peso_quadrimestres$contra_pessoa, contra_pessoa),
+    acidentes = if_else(ano == 2020,
+          acidentes / peso_quadrimestres$acidentes, acidentes)
+  ) %>%
+# 5. Pivotar de volta, lembrando que perdi a população
+  tidyr::pivot_longer(cols = CVLI:acidentes,
+                      names_to = "tipo_crime",
+                      values_to = "quantidade") %>%
+# 6. join com a tabela auxiliar para obter a população de volta
+  left_join(tabela_auxiliar %>%
+              group_by(regiao) %>%
+              summarise(populacao = sum(populacao))) %>%
+# 7. acrescentar a quantidade relativa, ou seja crime/100k hab
+  mutate(
+    qnt_relativa = (quantidade/populacao)*100000
+  ) %>%
+# 8. retirar a coluna de populacao e desagrupar
+  select(-populacao) %>%
+  ungroup()
+
+
+#### Remover bases anteriores ####
+rm(covid_sp, ssp)
 
 #### PRA FAZER ####
 # mostrar onde são as regiões
