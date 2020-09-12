@@ -93,6 +93,7 @@ base <- base %>%
   mutate(
     transito = sum(c_across(contains("_transito")))
   ) %>%
+  ungroup() %>%
   select(-contains("_transito"))
 
 # Reunir lesões corporais
@@ -102,6 +103,7 @@ base <- base %>%
   mutate(
     lesaocorporal = sum(c_across(contains("lesao_corp")))
   ) %>%
+  ungroup() %>%
   select(-contains("lesao_corp"))
 
 
@@ -109,12 +111,7 @@ base <- base %>%
 base <- base %>%
   rename(homicidio_culposo = hom_culposo_outros)
 
-#### Preparar análise ####
-# Agora faz sentido agrupar por municípios, ignorando a delegacia
-# Vou remover essas colunas
 
-base %>%
-  select(-delegacia_nome, -regiao_nome) %>%
-  View()
+# Salvar no /data
+readr::write_rds(base, path = "data/ssp-arrumada.rds")
 
-## Adaptar base do COVID
