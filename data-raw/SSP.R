@@ -100,7 +100,7 @@ base <- base %>%
 base <- base %>%
   rowwise(mes:delegacia_nome) %>%
   mutate(
-    lesao-corporal = sum(c_across(contains("lesao_corp")))
+    lesaocorporal = sum(c_across(contains("lesao_corp")))
   ) %>%
   select(-contains("lesao_corp"))
 
@@ -114,6 +114,7 @@ base <- base %>%
 # Vou remover essas colunas
 
 base %>%
-  select(-delegacia_nome, -regiao_nome)
+  select(-delegacia_nome, -regiao_nome) %>%
+  View()
 
 ## Adaptar base do COVID
