@@ -161,6 +161,8 @@ Podemos ver que
 | São José dos Campos   |      150.07322 |        5.150128 |
 | Sorocaba              |      148.78888 |        7.043992 |
 
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
 ## O CRIME E O ESTADO DE SÃO PAULO
 
 ### Tendências
@@ -177,10 +179,12 @@ São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
 
 #### Quarentena
 
-``` r
-
-# Tabela mostrando redução
-```
+|     Crime      |  2015  |  2016  |  2017  |  2018  |  2019  |  2020  |
+| :------------: | :----: | :----: | :----: | :----: | :----: | :----: |
+|      CVLI      |  19.3  |  17.9  |  16.9  |  15.3  |  14.4  |  14.5  |
+|   patrimonio   | 1996.0 | 2075.9 | 2145.6 | 1983.0 | 1946.6 | 1634.6 |
+| contra\_pessoa | 325.3  | 327.6  | 323.4  | 306.1  | 312.5  | 262.5  |
+|   acidentes    | 264.6  | 231.5  | 212.0  | 182.8  | 179.8  | 134.2  |
 
 Durou em especial nos primeiros meses
 
@@ -227,9 +231,403 @@ Temos regiões com mais crime que covid?
 Temos uma pandemia de violência?
 
 ``` r
-
 # olhar cidades com crimes > covid e < covid
+
+tabela_cvli_mortalidade <- covid_sp %>% 
+   filter(mes == max(mes), obitosAcumulado > 0) %>% 
+  left_join(ssp_sumarizada %>% 
+              filter(ano == 2020, tipo_crime == "CVLI")) %>% 
+  group_by(municipio, populacao) %>% 
+  summarise(
+    CVLI = (quantidade/populacao)*100000,
+    obito_covid = (obitosAcumulado/populacao)*100000,
+    causa_maior = as.factor(if_else(CVLI > obito_covid,
+                          "crime",
+                          "covid"))) %>% 
+  unique()
+#> Warning in paste0("Joining, by = ", by_code): NAs introduced by coercion to
+#> integer range
+#> Warning in paste0(message, "\n"): NAs introduced by coercion to integer range
+#> Joining, by = "regiao"
+#> Warning in paste0(nm, suffix): NAs introduced by coercion to integer range
+#> Warning in row.names.data.frame(x): NAs introduced by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0(msg, collapse = "\n"): NAs introduced by coercion to integer
+#> range
+
+#> Warning in paste0(msg, collapse = "\n"): NAs introduced by coercion to integer
+#> range
+#> Warning in paste0("'", group_vars, "'"): NAs introduced by coercion to integer
+#> range
+#> Warning in paste0(x, collapse = sep): NAs introduced by coercion to integer
+#> range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("`summarise()` ", glue(..., .envir = .env), " (override with
+#> `.groups` argument)"): NAs introduced by coercion to integer range
+#> Warning in paste0(message, "\n"): NAs introduced by coercion to integer range
+#> `summarise()` regrouping output by 'municipio', 'populacao' (override with `.groups` argument)
+#> Warning in row.names.data.frame(x): NAs introduced by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in row.names.data.frame(x): NAs introduced by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in row.names.data.frame(x): NAs introduced by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+
+#> Warning in paste0("..", x): NAs introduced by coercion to integer range
+#> Warning in paste0(unnamed_args, collapse = .sep): NAs introduced by coercion to
+#> integer range
+#> Warning in (function (..., collapse = NULL, recycle0 = FALSE) : NAs introduced
+#> by coercion to integer range
 ```
+
+Vamos olhar para as cidades que tiveram ao menos um registro de óbito
+por COVID. Elas totalizam 286 cidades.
+
+Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID
+do que por CVLI. Embora imperfeita, a comparação é possível considerando
+que o resultado dos CVLI é praticamente sempre o óbito.
+
+<table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+
+<thead>
+
+<tr>
+
+<th style="text-align:center;">
+
+municipio
+
+</th>
+
+<th style="text-align:center;">
+
+populacao
+
+</th>
+
+<th style="text-align:center;">
+
+CVLI
+
+</th>
+
+<th style="text-align:center;">
+
+obito\_covid
+
+</th>
+
+<th style="text-align:center;">
+
+causa\_maior
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td style="text-align:center;">
+
+São Paulo
+
+</td>
+
+<td style="text-align:center;">
+
+12252023
+
+</td>
+
+<td style="text-align:center;">
+
+4.0
+
+</td>
+
+<td style="text-align:center;">
+
+34.9
+
+</td>
+
+<td style="text-align:center;">
+
+covid
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:center;">
+
+Santos
+
+</td>
+
+<td style="text-align:center;">
+
+433311
+
+</td>
+
+<td style="text-align:center;">
+
+28.8
+
+</td>
+
+<td style="text-align:center;">
+
+34.2
+
+</td>
+
+<td style="text-align:center;">
+
+covid
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:center;">
+
+Embu-Guaçu
+
+</td>
+
+<td style="text-align:center;">
+
+69385
+
+</td>
+
+<td style="text-align:center;">
+
+0.0
+
+</td>
+
+<td style="text-align:center;">
+
+14.4
+
+</td>
+
+<td style="text-align:center;">
+
+covid
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:center;">
+
+São Luiz do Paraitinga
+
+</td>
+
+<td style="text-align:center;">
+
+10687
+
+</td>
+
+<td style="text-align:center;">
+
+0.0
+
+</td>
+
+<td style="text-align:center;">
+
+9.4
+
+</td>
+
+<td style="text-align:center;">
+
+covid
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:center;">
+
+Uchoa
+
+</td>
+
+<td style="text-align:center;">
+
+10110
+
+</td>
+
+<td style="text-align:center;">
+
+0.0
+
+</td>
+
+<td style="text-align:center;">
+
+9.9
+
+</td>
+
+<td style="text-align:center;">
+
+covid
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:center;">
+
+Tarabai
+
+</td>
+
+<td style="text-align:center;">
+
+7468
+
+</td>
+
+<td style="text-align:center;">
+
+0.0
+
+</td>
+
+<td style="text-align:center;">
+
+13.4
+
+</td>
+
+<td style="text-align:center;">
+
+covid
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+## Próximos temas
+
+Diante do que foi exposto, creio ser possível levantar algumas questões
+para estudos futuros e mais aprofundados:
+
+  - Considerando que em CVLI não são englobadas as mortes causadas por
+    intervenção policial, é importante considerar esse aspecto.
+
+  - Observar dados mais atualizados tanto de crimes quanto de COVID pois
+    é possível que a taxa constante de crimes não tenha sido superada
+    pelas da pandemia.
 
 ## Notas
 

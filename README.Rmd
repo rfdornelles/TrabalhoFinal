@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -23,6 +24,7 @@ covid_original <- readr::read_rds("data-raw/covid.rds")
 # Rodar arquivo que traz parâmetros para os gráficos
 source(file = "R/Gerar-Mapas.R")
 
+# Chamar pacotes úteis
 library(patchwork)
 ```
 
@@ -222,6 +224,8 @@ mapa_mortalidade_br + mortalidade + plot_annotation(
 Podemos ver que
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# Banco dos casos em SP
 covid_sp <- readr::read_rds("data/COVID-sp.rds") %>%
   select(municipio,code_muni, data,
          populacao = populacaoTCU2019, casosAcumulado,
@@ -242,8 +246,11 @@ covid_sp <- readr::read_rds("data/COVID-sp.rds") %>%
   mutate (
     incidencia = (casosAcumulado / populacao) * 100000,
     mortalidade = (obitosAcumulado / populacao) * 100000,
-    # letalidade = sum(obitosAcumulado) / (sum(casosAcumulado) * 100)
+    incidencia = tidyr::replace_na(incidencia, 0),
+    mortalidade = tidyr::replace_na(incidencia, 0)
   )
+
+# Tabela 
 
 covid_sumarizada %>%
   filter(mes == max(mes), !is.na(regiao)) %>%
@@ -255,6 +262,29 @@ covid_sumarizada %>%
          `Tx. Mortalidade` = mortalidade)  %>% 
  knitr::kable()
 
+# Mapas
+
+mapa_sp_incidencia <- mapa_sp %>% 
+  left_join(covid_sp %>% 
+              filter(mes == max(mes)), by = "code_muni") %>% 
+  ggplot(mapping = aes(fill = incidencia)) +
+  ggtitle(label = NULL, subtitle = "Incidência de casos") +
+  geom_sf(show.legend = FALSE, color = "transparent", size = 1/100000) +
+  scale_fill_gradient(low = "#FFDFBD", high = "#914B00") +
+  tema()
+
+mapa_sp_mortalidade <- mapa_sp %>% 
+  left_join(covid_sp %>% 
+              filter(mes == max(mes)), by = "code_muni") %>% 
+  ggplot(mapping = aes(fill = mortalidade)) +
+  ggtitle(label = NULL, subtitle = "Mortalidade de casos") +
+  geom_sf(show.legend = FALSE, color = "transparent", size = 1/100000) +
+  scale_fill_gradient(low = "#FAD7D7", high = "#7A1010") +
+  tema()
+
+# Montar mapas com patchwork
+
+mapa_sp_incidencia + mapa_sp_mortalidade + plot_annotation("Casos de COVID-19 em SP")
 ```
 
 ## O CRIME E O ESTADO DE SÃO PAULO
@@ -305,9 +335,40 @@ ssp_sumarizada_projecao %>%
 
 #### Quarentena
 
-```{r tabela_quarentena}
-
+```{r tabela_quarentena, echo=FALSE, message=FALSE, warning=FALSE}
 # Tabela mostrando redução
+
+ssp_sumarizada_projecao %>% 
+  left_join(tabela_auxiliar %>% 
+              group_by(regiao) %>% 
+              summarise(populacao = sum(populacao))
+            ) %>% 
+  select(-qnt_relativa) %>% 
+  tidyr::pivot_wider(
+    names_from = tipo_crime,
+    values_from = quantidade
+  ) %>% 
+  select(-regiao) %>% 
+  group_by(ano) %>% 
+  summarise(
+    CVLI = (sum(CVLI)/sum(populacao))*100000,
+    patrimonio = (sum(patrimonio)/sum(populacao))*100000,
+    contra_pessoa = (sum(contra_pessoa)/sum(populacao))*100000,
+    acidentes = (sum(acidentes)/sum(populacao))*100000
+  ) %>% 
+  filter(ano >= 2015) %>% 
+  tidyr::pivot_longer(
+    cols = CVLI:acidentes,
+    names_to = "Crime",
+    values_to = "Taxa"
+  ) %>% 
+  tidyr::pivot_wider(
+    values_from = Taxa,
+    names_from = ano
+  ) %>% 
+  knitr::kable(digits = 1, align = "c") %>% 
+  kableExtra::kable_paper("hover", full_width = F) %>% 
+  kableExtra::column_spec(7, background = "#F1FFED")
 
 ```
 
@@ -355,8 +416,43 @@ Temos regiões com mais crime que covid?
 Temos uma pandemia de violência?
 
 ```{r}
-
 # olhar cidades com crimes > covid e < covid
+
+tabela_cvli_mortalidade <- covid_sp %>% 
+   filter(mes == max(mes), obitosAcumulado > 0) %>% 
+  left_join(ssp_sumarizada %>% 
+              filter(ano == 2020, tipo_crime == "CVLI")) %>% 
+  group_by(municipio, populacao) %>% 
+  summarise(
+    CVLI = (quantidade/populacao)*100000,
+    obito_covid = (obitosAcumulado/populacao)*100000,
+    causa_maior = as.factor(if_else(CVLI > obito_covid,
+                          "crime",
+                          "covid"))) %>% 
+  unique()
+
 ```
+
+Vamos olhar para as cidades que tiveram ao menos um registro de óbito por COVID. Elas totalizam `r covid_sp %>% filter(obitosAcumulado > 0, mes == max(mes)) %>% nrow()` cidades.
+
+Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID do que por CVLI. Embora imperfeita, a comparação é possível considerando que o resultado dos CVLI é praticamente sempre o óbito.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# tabela mostrando cidades com mais mortes por COVID
+
+tabela_cvli_mortalidade %>% 
+  filter(causa_maior == "covid") %>% 
+  arrange(-populacao) %>% 
+   knitr::kable(digits = 1, align = "c") %>% 
+   kableExtra::kable_paper("hover", full_width = F)
+```
+
+## Próximos temas
+
+Diante do que foi exposto, creio ser possível levantar algumas questões para estudos futuros e mais aprofundados:
+
+-   Considerando que em CVLI não são englobadas as mortes causadas por intervenção policial, é importante considerar esse aspecto.
+
+-   Observar dados mais atualizados tanto de crimes quanto de COVID pois é possível que a taxa constante de crimes não tenha sido superada pelas da pandemia.
 
 ## Notas
