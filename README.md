@@ -130,33 +130,57 @@ medidas, adotou-se os seguintes padrões:
 
 ## ESTADO DE SÃO PAULO E A COVID-19
 
-### Situação da COVID no Brasil
-
 Como é sabido, o Brasil chegou rapidamente aos países com mais casos no
 mundo. Ao contrário do que se disse, esse número não se deu unicamente
 em razão da grandeza de sua população.
-
-### SP como epicentro nacional
 
 Por outro lado, o Estado de São Paulo foi por muito tempo o “epicentro”
 da pandemia no país. Além de sua alta população, possivelmente houve
 influência da sua alta urbanização dentre muitos outros fatores.
 
-### Bla bla bla
+Válido, portanto, retomar um pouco dos impactos da COVID no país
 
-![](README_files/figure-gfm/graficos_covid_sp-1.png)<!-- -->![](README_files/figure-gfm/graficos_covid_sp-2.png)<!-- -->![](README_files/figure-gfm/graficos_covid_sp-3.png)<!-- -->![](README_files/figure-gfm/graficos_covid_sp-4.png)<!-- -->
+![](README_files/figure-gfm/graficos_e_mapas-covid-1.png)<!-- -->![](README_files/figure-gfm/graficos_e_mapas-covid-2.png)<!-- -->![](README_files/figure-gfm/graficos_e_mapas-covid-3.png)<!-- -->
+
+### Incidência de casos e Mortalidade em SP
+
+Podemos ver que
+
+| Região                | Tx. Incidência | Tx. Mortalidade |
+| :-------------------- | -------------: | --------------: |
+| Araçatuba             |       99.80972 |        5.804358 |
+| Bauru                 |      138.61548 |        4.499831 |
+| Campinas              |      234.37520 |       10.697623 |
+| Capital               |      762.71486 |       46.131157 |
+| Grande São Paulo      |      424.23362 |       32.307980 |
+| Piracicaba            |      134.60449 |        5.919456 |
+| Presidente Prudente   |       85.12163 |        5.007155 |
+| Ribeirão Preto        |      135.88468 |        4.538111 |
+| Santos                |      632.10607 |       27.769470 |
+| São José do Rio Preto |      178.22958 |        6.098886 |
+| São José dos Campos   |      150.07322 |        5.150128 |
+| Sorocaba              |      148.78888 |        7.043992 |
 
 ## O CRIME E O ESTADO DE SÃO PAULO
 
 ### Tendências
 
-![](README_files/figure-gfm/tendencia_crime-1.png)<!-- --> São Paulo,
-crimes, bla bla bla Tendência de queda por diversos fatores
+Dizer alguma coisa que a tendência é de queda
+
+![](README_files/figure-gfm/tendencia_crime-1.png)<!-- -->
+
+São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
+
 ![](README_files/figure-gfm/tabela_crimes_pandemia-1.png)<!-- -->
 
 ### Criminalidade durante a pandemia
 
 #### Quarentena
+
+``` r
+
+# Tabela mostrando redução
+```
 
 Durou em especial nos primeiros meses
 
@@ -173,11 +197,19 @@ Lesões corporais e estupros - como foram? pessoas em casa
 Acidentes de carro - diminuição da circulação, fechamento dos bares,
 lojas de conveniência, etc
 
+Fechamento das delegacias na pandemia\!\!\!
+
 Mas e os CVLI? Qual o impacto? Esses tendem a ter menos subnotificação
 
 Levantar o ponto da letalidade policial
 
 #### Regiões que tiveram aumento
+
+``` r
+# mapa destacando regiões onde houve aumento
+
+# resgatar série histórica dessas regiões
+```
 
 Explicações para isso
 
@@ -185,7 +217,19 @@ Explicações para isso
 
 Temos regiões com mais crime que covid?
 
+``` r
+# criar um mapa por região
+# colocar se aquela região tem mais mortes por crime ou por covid
+
+# colocar se tem mais incidêcia de casos X crimes contra o patrimônio
+```
+
 Temos uma pandemia de violência?
+
+``` r
+
+# olhar cidades com crimes > covid e < covid
+```
 
 ## Notas
 

@@ -12,12 +12,6 @@ knitr::opts_chunk$set(
 
 ```
 
-```{r to-do, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-## Acrescentar labels no mapa das regiões
-## Melhorar o fundo: tem que ser branco ou transparente
-## Tentar usar gifs
-```
-
 ```{r inicio, message=FALSE, warning=FALSE, include=FALSE}
 # Rodar arquivo de análises
 source(file = "R/Juntar-Analises.R")
@@ -120,25 +114,19 @@ mapa_sp %>%
       nudge_x = 0.2, nudge_y = 0.1,check_overlap = T) +
   tema()
   
-##### INCLUIR LABEL COM NOME NAS REGIÕES
 
-#ssp_sumarizada_projecao %>% filter (!is.na(regiao)) %>% pull(regiao) %>% #unique() %>% gridExtra::tableGrob(cols = "Regiões")
 
 ```
 
 ## ESTADO DE SÃO PAULO E A COVID-19
 
-### Situação da COVID no Brasil
-
 Como é sabido, o Brasil chegou rapidamente aos países com mais casos no mundo. Ao contrário do que se disse, esse número não se deu unicamente em razão da grandeza de sua população.
-
-### SP como epicentro nacional
 
 Por outro lado, o Estado de São Paulo foi por muito tempo o "epicentro" da pandemia no país. Além de sua alta população, possivelmente houve influência da sua alta urbanização dentre muitos outros fatores.
 
-### Bla bla bla
+Válido, portanto, retomar um pouco dos impactos da COVID no país
 
-```{r graficos_covid_sp, echo=FALSE, message=FALSE, warning=FALSE}
+```{r graficos_e_mapas-covid, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Criar os gráficos
 casos_nacional <- covid_original %>% 
@@ -147,8 +135,12 @@ casos_nacional <- covid_original %>%
   summarise(casosAcumulado = sum(casosAcumulado)) %>% 
   ggplot(aes(x = data, y = casosAcumulado, 
              color = regiao)) +
-  geom_line() +
-  scale_y_log10()
+  geom_line(show.legend = FALSE) +
+  scale_y_log10() +
+  ylab(NULL) +
+  xlab(NULL) +
+  theme_classic() +
+  ggtitle("Casos acumulados")
 
 obitos_nacional <- covid_original %>% 
   filter(regiao != "Brasil", !is.na(estado), is.na(municipio)) %>% 
@@ -157,38 +149,119 @@ obitos_nacional <- covid_original %>%
   ggplot(aes(x = data, y = obitosAcumulado, 
              color = regiao)) +
   geom_line() +
-  scale_y_log10()
+  scale_y_log10() +
+  ylab(NULL) +
+  xlab(NULL) +
+  theme_classic() +
+  ggtitle("Óbitos acumulados")
 
 incidencia <- covid_sumarizada %>%
   filter(variavel == "incidencia") %>% 
   group_by(mes) %>%
   summarise(soma = sum(quantidade)) %>%
   ggplot(aes(x = mes, y = soma)) +
-  geom_line()
+  geom_line() +
+  ylab(NULL) +
+  xlab(NULL) +
+  theme_classic()
 
 mortalidade <- covid_sumarizada %>%
   filter(variavel == "mortalidade") %>% 
   group_by(mes) %>%
   summarise(soma = sum(quantidade)) %>%
   ggplot(aes(x = mes, y = soma)) +
-  geom_line()
-
-
+  geom_line() +
+  ylab(NULL) +
+  xlab(NULL) +
+  theme_classic()
+ 
 # Criar os mapas
+mapa_br %>% 
+  left_join(covid_original %>% 
+  filter(regiao != "Brasil", !is.na(estado), is.na(codmun),
+         data == max(data)) %>% 
+  select(estado, populacaoTCU2019, casosAcumulado) %>% 
+  group_by(estado) %>% 
+  mutate(
+    incidencia = (casosAcumulado/populacaoTCU2019)*100000
+  ),
+  by = c("abbrev_state" = "estado")) %>% 
+  ggplot() +
+  geom_sf(aes(fill = incidencia), show.legend = F) +
+  geom_sf_text(mapping = aes(label = abbrev_state), size = 2) +
+  scale_fill_gradient(low = "#FFDFBD", high = "#914B00") +
+  tema() -> mapa_incidencia_br
 
-
+mapa_br %>% 
+  left_join(covid_original %>% 
+              filter(regiao != "Brasil", !is.na(estado), is.na(codmun),
+                     data == max(data)) %>% 
+              select(estado, populacaoTCU2019, obitosAcumulado) %>% 
+              group_by(estado) %>% 
+              mutate(
+                obitos = (obitosAcumulado/populacaoTCU2019)*100000
+              ),
+            by = c("abbrev_state" = "estado")) %>% 
+  ggplot() +
+  geom_sf(aes(fill = obitos), show.legend = F) +
+  geom_sf_text(aes(label = abbrev_state), size = 2) +
+  scale_fill_gradient(low = "#FAD7D7", high = "#7A1010") +
+  tema() -> mapa_mortalidade_br
 
 # Dispor os gráficos
-casos_nacional
-obitos_nacional  
-incidencia
-mortalidade
+casos_nacional + obitos_nacional + plot_annotation(
+  title = "Curvas de casos e óbitos acumulados")
+mapa_incidencia_br + incidencia + plot_annotation(
+  title = 'Taxa de incidência de COVID-19')
+mapa_mortalidade_br + mortalidade + plot_annotation(
+  title = 'Taxa de mortalidade de COVID-19')
+```
+
+### Incidência de casos e Mortalidade em SP
+
+Podemos ver que
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+covid_sp <- readr::read_rds("data/COVID-sp.rds") %>%
+  select(municipio,code_muni, data,
+         populacao = populacaoTCU2019, casosAcumulado,
+         obitosAcumulado) %>%
+  # 1. reunir com a tabela auxiliar para obter a mesma região que vai ser
+  # usada na SSP - reduz para 12+NA regiões
+  left_join(tabela_auxiliar %>%
+              select(-populacao, -code_muni)) %>%
+  relocate(regiao) %>%
+  # 2. organizo por mês (ano vai ser sempre 2020), sendo que o último dia do
+  # mês representa aquele total (afinal, os dados são acumulados)
+  mutate(mes = lubridate::month(data),
+         dia = lubridate::day(data)) %>% #ano sempre será 2020
+  # 3. vou agrupar por região/mês e selecionar o último dia de cada mês
+  filter(dia == max(dia)) %>%
+  # 4. sumarizar por incidência de casos e por mortes relativas para cada
+  # região
+  mutate (
+    incidencia = (casosAcumulado / populacao) * 100000,
+    mortalidade = (obitosAcumulado / populacao) * 100000,
+    # letalidade = sum(obitosAcumulado) / (sum(casosAcumulado) * 100)
+  )
+
+covid_sumarizada %>%
+  filter(mes == max(mes), !is.na(regiao)) %>%
+  tidyr::pivot_wider(
+    names_from = "variavel",
+    values_from = "quantidade"
+  ) %>% 
+  select(-mes, Região = regiao, `Tx. Incidência` = incidencia,
+         `Tx. Mortalidade` = mortalidade)  %>% 
+ knitr::kable()
 
 ```
 
 ## O CRIME E O ESTADO DE SÃO PAULO
 
 ### Tendências
+
+Dizer alguma coisa que a tendência é de queda
 
 ```{r tendencia_crime, echo=FALSE, message=FALSE, warning=FALSE}
 ssp_sumarizada_projecao %>%
@@ -204,7 +277,9 @@ ssp_sumarizada_projecao %>%
   theme(axis.text.x = element_text(angle=65, vjust=0.6))
 
 ```
+
 São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
+
 ```{r tabela_crimes_pandemia, echo=FALSE, message=FALSE, warning=FALSE}
 ssp_sumarizada_projecao %>%
   ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = ano)) +
@@ -230,6 +305,12 @@ ssp_sumarizada_projecao %>%
 
 #### Quarentena
 
+```{r tabela_quarentena}
+
+# Tabela mostrando redução
+
+```
+
 Durou em especial nos primeiros meses
 
 Qual impacto teve nos índices?
@@ -244,11 +325,19 @@ Lesões corporais e estupros - como foram? pessoas em casa
 
 Acidentes de carro - diminuição da circulação, fechamento dos bares, lojas de conveniência, etc
 
+Fechamento das delegacias na pandemia!!!
+
 Mas e os CVLI? Qual o impacto? Esses tendem a ter menos subnotificação
 
 Levantar o ponto da letalidade policial
 
 #### Regiões que tiveram aumento
+
+```{r}
+# mapa destacando regiões onde houve aumento
+
+# resgatar série histórica dessas regiões
+```
 
 Explicações para isso
 
@@ -256,6 +345,18 @@ Explicações para isso
 
 Temos regiões com mais crime que covid?
 
+```{r}
+# criar um mapa por região
+# colocar se aquela região tem mais mortes por crime ou por covid
+
+# colocar se tem mais incidêcia de casos X crimes contra o patrimônio
+```
+
 Temos uma pandemia de violência?
+
+```{r}
+
+# olhar cidades com crimes > covid e < covid
+```
 
 ## Notas
