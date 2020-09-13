@@ -101,3 +101,33 @@ ssp_sumarizada_projecao %>%
 ggplot(mapping = aes(x = ano, y = qnt_relativa, color = regiao)) +
   geom_line() +
   facet_wrap(~tipo_crime, scales = "free_y")
+
+ssp_sumarizada_projecao %>%
+  ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = tipo_crime)) +
+  scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
+  geom_col(position = "dodge") +
+  theme_classic() +
+  labs(title = "Evolução geral de ocorrências criminais em SP",
+       subtitle = "De 2002 a 2020*",
+       caption = "*estimativa") +
+  ylab(label = "Ocorrências por 100mil/hab") +
+  xlab(label = NULL) +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+ssp_sumarizada_projecao %>%
+  ggplot(mapping = aes(x = ano, y = qnt_relativa)) +
+  scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
+  geom_col(position = "dodge") +
+  facet_grid(factor(tipo_crime,
+      labels = c("Acidentes", "Contra a pessoa",
+                 "CVLO",
+                 "Patrimônio")) ~ ., scales = "free_y") +
+  theme_classic() +
+  labs(title = "Evolução geral de ocorrências criminais em SP",
+       subtitle = "De 2002 a 2020*",
+       caption = "*estimativa") +
+  ylab(label = "Ocorrências por 100mil/hab") +
+  xlab(label = NULL) +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+

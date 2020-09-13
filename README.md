@@ -126,21 +126,6 @@ medidas, adotou-se os seguintes padrões:
     também para os dados da pandemia (base `COVID`). Assim, os dados
     foram apresentados considerando as mesmas 12 regiões.
 
-|  Regiões Utilizadas   |
-| :-------------------: |
-|       Araçatuba       |
-|         Bauru         |
-|       Campinas        |
-|        Capital        |
-|   Grande São Paulo    |
-|      Piracicaba       |
-|  Presidente Prudente  |
-|    Ribeirão Preto     |
-|        Santos         |
-| São José do Rio Preto |
-|  São José dos Campos  |
-|       Sorocaba        |
-
 ![](README_files/figure-gfm/regioes-1.png)<!-- -->
 
 ## ESTADO DE SÃO PAULO E A COVID-19
@@ -159,11 +144,15 @@ influência da sua alta urbanização dentre muitos outros fatores.
 
 ### Bla bla bla
 
+![](README_files/figure-gfm/graficos_covid_sp-1.png)<!-- -->![](README_files/figure-gfm/graficos_covid_sp-2.png)<!-- -->![](README_files/figure-gfm/graficos_covid_sp-3.png)<!-- -->![](README_files/figure-gfm/graficos_covid_sp-4.png)<!-- -->
+
 ## O CRIME E O ESTADO DE SÃO PAULO
 
 ### Tendências
 
-São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
+![](README_files/figure-gfm/tendencia_crime-1.png)<!-- --> São Paulo,
+crimes, bla bla bla Tendência de queda por diversos fatores
+![](README_files/figure-gfm/tabela_crimes_pandemia-1.png)<!-- -->
 
 ### Criminalidade durante a pandemia
 

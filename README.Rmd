@@ -28,6 +28,8 @@ covid_original <- readr::read_rds("data-raw/covid.rds")
 
 # Rodar arquivo que traz parâmetros para os gráficos
 source(file = "R/Gerar-Mapas.R")
+
+library(patchwork)
 ```
 
 # CRIME E COVID: uma relação viral? [^1]
@@ -103,31 +105,40 @@ A fim de que se pudesse tornar os dados estudados comparáveis em algumas medida
 
 -   As **regiões** da Segurança Pública (base `SSP`) foram aproveitadas também para os dados da pandemia (base `COVID`). Assim, os dados foram apresentados considerando as mesmas 12 regiões.
 
-```{r tabela_regioes, echo=FALSE, fig.width=30, message=FALSE, warning=FALSE, paged.print=FALSE}
-ssp_sumarizada_projecao %>% filter (!is.na(regiao)) %>% pull(regiao) %>% unique() %>% knitr::kable(col.names = "Regiões Utilizadas", align = "c")
-```
-
 ```{r regioes, echo=FALSE, message=FALSE, warning=FALSE}
 
-# Usa a função que cria mapas
-
-gera_mapa2(coluna = regiao, tabela = tabela_auxiliar)
+mapa_sp %>% 
+  left_join(tabela_auxiliar) %>% 
+  ggplot(mapping = aes(fill = regiao)) +
+  geom_sf(show.legend = FALSE, colour = "transparent", size = 1/100000) +
+  scale_fill_brewer(palette = "Paired") +
+  geom_sf_text(data = mapa_sp %>% 
+                 left_join(tabela_auxiliar) %>% 
+                 filter(municipio == regiao | municipio == "São Paulo" | municipio == "Carapicuiba"), 
+      aes(label = regiao), 
+      show.legend = FALSE, size = 3,
+      nudge_x = 0.2, nudge_y = 0.1,check_overlap = T) +
+  tema()
+  
 ##### INCLUIR LABEL COM NOME NAS REGIÕES
+
+#ssp_sumarizada_projecao %>% filter (!is.na(regiao)) %>% pull(regiao) %>% #unique() %>% gridExtra::tableGrob(cols = "Regiões")
 
 ```
 
-## ESTADO DE SÃO PAULO E A COVID-19 
+## ESTADO DE SÃO PAULO E A COVID-19
 
 ### Situação da COVID no Brasil
+
 Como é sabido, o Brasil chegou rapidamente aos países com mais casos no mundo. Ao contrário do que se disse, esse número não se deu unicamente em razão da grandeza de sua população.
 
 ### SP como epicentro nacional
+
 Por outro lado, o Estado de São Paulo foi por muito tempo o "epicentro" da pandemia no país. Além de sua alta população, possivelmente houve influência da sua alta urbanização dentre muitos outros fatores.
 
 ### Bla bla bla
 
-
-```{r graficos_covid_sp, eval=FALSE, include=FALSE}
+```{r graficos_covid_sp, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Criar os gráficos
 casos_nacional <- covid_original %>% 
@@ -162,26 +173,63 @@ mortalidade <- covid_sumarizada %>%
   ggplot(aes(x = mes, y = soma)) +
   geom_line()
 
+
 # Criar os mapas
 
 
 
 # Dispor os gráficos
-
+casos_nacional
+obitos_nacional  
+incidencia
+mortalidade
 
 ```
-
 
 ## O CRIME E O ESTADO DE SÃO PAULO
 
 ### Tendências
 
-São Paulo, crimes, bla bla bla
-Tendência de queda por diversos fatores
+```{r tendencia_crime, echo=FALSE, message=FALSE, warning=FALSE}
+ssp_sumarizada_projecao %>%
+  ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = tipo_crime)) +
+  scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
+  geom_col(position = "stack") +
+  theme_classic() +
+  labs(title = "Evolução geral de ocorrências criminais em SP",
+       subtitle = "De 2002 a 2020*",
+       caption = "*estimativa") +
+  ylab(label = "Ocorrências por 100mil/hab") +
+  xlab(label = NULL) +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+```
+São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
+```{r tabela_crimes_pandemia, echo=FALSE, message=FALSE, warning=FALSE}
+ssp_sumarizada_projecao %>%
+  ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = ano)) +
+  scale_fill_gradient(low="#945E00", high="#00948C") +
+  scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
+  geom_col(position = "dodge", show.legend = F) +
+  facet_grid(factor(tipo_crime, 
+      labels = c("Acidentes", "Pessoa", 
+                 "CVLI", 
+                 "Patrimônio")) ~ ., scales = "free_y") +
+  theme_classic() +
+  labs(title = "Evolução por categorias de crimes",
+       subtitle = "De 2002 a 2020*",
+       caption = "*estimativa") +
+  ylab(label = "Ocorrências por 100mil/hab") +
+  xlab(label = NULL) +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+
+```
 
 ### Criminalidade durante a pandemia
 
 #### Quarentena
+
 Durou em especial nos primeiros meses
 
 Qual impacto teve nos índices?
