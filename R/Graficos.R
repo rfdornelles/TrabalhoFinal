@@ -100,7 +100,8 @@ ssp_sumarizada %>%
 ssp_sumarizada_projecao %>%
 ggplot(mapping = aes(x = ano, y = qnt_relativa, color = regiao)) +
   geom_line() +
-  facet_wrap(~tipo_crime, scales = "free_y")
+  facet_grid(tipo_crime~., scales = "free_y") +
+  geom_label(aes(label = estado), show.legend = FALSE)
 
 ssp_sumarizada_projecao %>%
   ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = tipo_crime)) +

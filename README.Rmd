@@ -34,7 +34,9 @@ library(patchwork)
 
 ## APRESENTAÇÃO
 
-O presente trabalho visa realizar uma singela análise sobre os índices de criminalidade no Estado de São Paulo e compará-los aos números da pandemia causada pela COVID-19.
+O presente trabalho visa realizar uma singela análise sobre os índices de criminalidade no Estado de São Paulo e compará-los aos números da pandemia causada pela COVID-19.[^2]
+
+[^2]: Ele se dá no contexto de conclusão do [Curso de R para Ciência de Dados](https://www.curso-r.com/cursos/r4ds-2/) e, portanto, não tem grandes pretensões científicas.
 
 Pretendemos verificar as consequências da pandemia (dentre eles, a breve quarentena que se verificou no estado) e levantar algumas reflexões sobre os impactos da violência. Dentre as perguntas que se pretende refletir (mas sem a pretensão de oferecer respostas):
 
@@ -101,7 +103,7 @@ A fim de que se pudesse tornar os dados estudados comparáveis em algumas medida
 
 -   As **regiões** da Segurança Pública (base `SSP`) foram aproveitadas também para os dados da pandemia (base `COVID`). Assim, os dados foram apresentados considerando as mesmas 12 regiões.
 
-```{r regioes, echo=FALSE, message=FALSE, warning=FALSE}
+```{r mapa_regioes, echo=FALSE, message=FALSE, warning=FALSE}
 
 mapa_sp %>% 
   left_join(tabela_auxiliar) %>% 
@@ -115,9 +117,6 @@ mapa_sp %>%
       show.legend = FALSE, size = 3,
       nudge_x = 0.2, nudge_y = 0.1,check_overlap = T) +
   tema()
-  
-
-
 ```
 
 ## ESTADO DE SÃO PAULO E A COVID-19
@@ -142,7 +141,7 @@ casos_nacional <- covid_original %>%
   ylab(NULL) +
   xlab(NULL) +
   theme_classic() +
-  ggtitle("Casos acumulados")
+  ggtitle("Casos acumulados") 
 
 obitos_nacional <- covid_original %>% 
   filter(regiao != "Brasil", !is.na(estado), is.na(municipio)) %>% 
@@ -155,30 +154,32 @@ obitos_nacional <- covid_original %>%
   ylab(NULL) +
   xlab(NULL) +
   theme_classic() +
-  ggtitle("Óbitos acumulados")
+  ggtitle("Óbitos acumulados") 
 
 incidencia <- covid_sumarizada %>%
   filter(variavel == "incidencia") %>% 
   group_by(mes) %>%
   summarise(soma = sum(quantidade)) %>%
   ggplot(aes(x = mes, y = soma)) +
-  geom_line() +
+  geom_line(size = 2) +
   ylab(NULL) +
   xlab(NULL) +
-  theme_classic()
+  theme_classic() 
 
 mortalidade <- covid_sumarizada %>%
   filter(variavel == "mortalidade") %>% 
   group_by(mes) %>%
   summarise(soma = sum(quantidade)) %>%
   ggplot(aes(x = mes, y = soma)) +
-  geom_line() +
+  geom_line(size = 2) +
   ylab(NULL) +
   xlab(NULL) +
-  theme_classic()
+  theme_classic() 
  
 # Criar os mapas
-mapa_br %>% 
+
+# Incidência
+mapa_incidencia_br <- mapa_br %>% 
   left_join(covid_original %>% 
   filter(regiao != "Brasil", !is.na(estado), is.na(codmun),
          data == max(data)) %>% 
@@ -192,9 +193,10 @@ mapa_br %>%
   geom_sf(aes(fill = incidencia), show.legend = F) +
   geom_sf_text(mapping = aes(label = abbrev_state), size = 2) +
   scale_fill_gradient(low = "#FFDFBD", high = "#914B00") +
-  tema() -> mapa_incidencia_br
+  tema()
 
-mapa_br %>% 
+# Mortalidade
+mapa_mortalidade_br <- mapa_br %>% 
   left_join(covid_original %>% 
               filter(regiao != "Brasil", !is.na(estado), is.na(codmun),
                      data == max(data)) %>% 
@@ -208,7 +210,9 @@ mapa_br %>%
   geom_sf(aes(fill = obitos), show.legend = F) +
   geom_sf_text(aes(label = abbrev_state), size = 2) +
   scale_fill_gradient(low = "#FAD7D7", high = "#7A1010") +
-  tema() -> mapa_mortalidade_br
+  tema()
+
+#gganimate::animate(, end_pause = 40)
 
 # Dispor os gráficos
 casos_nacional + obitos_nacional + plot_annotation(
@@ -223,7 +227,7 @@ mapa_mortalidade_br + mortalidade + plot_annotation(
 
 Podemos ver que
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r tabela_mapa_covid_incidencia_mortalidade, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Banco dos casos em SP
 covid_sp <- readr::read_rds("data/COVID-sp.rds") %>%
@@ -260,7 +264,7 @@ covid_sumarizada %>%
   ) %>% 
   select(-mes, Região = regiao, `Tx. Incidência` = incidencia,
          `Tx. Mortalidade` = mortalidade)  %>% 
- knitr::kable()
+ knitr::kable(digits = 1, align = "c", format.args = list(big.mark = ".", decimal.mark = ","))
 
 # Mapas
 
@@ -293,7 +297,7 @@ mapa_sp_incidencia + mapa_sp_mortalidade + plot_annotation("Casos de COVID-19 em
 
 Dizer alguma coisa que a tendência é de queda
 
-```{r tendencia_crime, echo=FALSE, message=FALSE, warning=FALSE}
+```{r grafico_tendencia_crime, echo=FALSE, message=FALSE, warning=FALSE}
 ssp_sumarizada_projecao %>%
   ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = tipo_crime)) +
   scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
@@ -310,7 +314,7 @@ ssp_sumarizada_projecao %>%
 
 São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
 
-```{r tabela_crimes_pandemia, echo=FALSE, message=FALSE, warning=FALSE}
+```{r grafico_crimes_evolucao, echo=FALSE, message=FALSE, warning=FALSE}
 ssp_sumarizada_projecao %>%
   ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = ano)) +
   scale_fill_gradient(low="#945E00", high="#00948C") +
@@ -365,8 +369,9 @@ ssp_sumarizada_projecao %>%
   tidyr::pivot_wider(
     values_from = Taxa,
     names_from = ano
-  ) %>% 
-  knitr::kable(digits = 1, align = "c") %>% 
+  ) %>%
+  knitr::kable(digits = 1, align = "c", 
+               format.args = list(big.mark = ".", decimal.mark = ",")) %>% 
   kableExtra::kable_paper("hover", full_width = F) %>% 
   kableExtra::column_spec(7, background = "#F1FFED")
 
@@ -394,30 +399,90 @@ Levantar o ponto da letalidade policial
 
 #### Regiões que tiveram aumento
 
-```{r}
+```{r grafico_crimes_SP, echo=FALSE, message=FALSE, warning=FALSE}
 # mapa destacando regiões onde houve aumento
 
-# resgatar série histórica dessas regiões
+grafico_animado1 <- ssp_sumarizada_projecao %>%
+  ggplot(mapping = aes(x = ano, y = qnt_relativa, color = regiao)) +
+  geom_line() +
+  facet_grid(factor(tipo_crime, 
+                    labels = c("Acidentes", "Pessoa", 
+                               "CVLI", "Patrimônio")) ~ ., 
+             scales = "free_y") +
+  geom_point() +
+  theme_classic() +
+  scale_color_brewer(palette = "Paired") +
+  gganimate::transition_reveal(ano)
+
+gganimate::animate(grafico_animado1, end_pause = 40)
+
 ```
 
-Explicações para isso
+Da visualização do gráfico notamos que **todas** as categorias de crimes demonstram redução em 2020, exceto uma, *CVLI*. Ou seja, destoando dos demais tipos de crime, tudo indica que em 2020 haverá - ao menos em parte das regiões - mais CVLI do que o ano passado.
+
+Pertinente, então, observarmos **quais** regiões tiveram esse comportamento.
+
+```{r tabela_diferenças_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
+
+tabela_diferencas_CVLI <- ssp_sumarizada_projecao %>% 
+  left_join(tabela_auxiliar %>% 
+              group_by(regiao) %>% 
+              summarise(populacao = sum(populacao))
+  ) %>% 
+  filter(ano >= 2019, tipo_crime == "CVLI", !is.na(regiao)) %>% 
+  tidyr::pivot_wider(
+    names_from = tipo_crime,
+    values_from = quantidade
+  ) %>% 
+  #select(-regiao) %>% 
+  group_by(regiao, ano, populacao) %>% 
+  summarise(
+    CVLI = (sum(CVLI)/sum(populacao))*100000,
+  ) %>% 
+  tidyr::pivot_wider(
+    names_from = "ano",
+    values_from = "CVLI"
+  ) %>% 
+  mutate(
+    diferenca = (`2020`-`2019`)/`2019`*100
+  ) 
+tabela_diferencas_CVLI %>% 
+  knitr::kable(col.names = c("Região", "População", "2019", "2020", "Δ%"),
+               digits = 1, align = "c", 
+               format.args = list(big.mark = ".", decimal.mark = ",")) %>% 
+  kableExtra::kable_paper(c("striped", "condensed"), full_width = F)
+```
+Observamos então que as regiões de Araçatuba, Bauru,
+
+```{r mapa_diferenças_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
+
+mapa_sp %>% 
+  left_join(
+    tabela_diferencas_CVLI %>% 
+      left_join(tabela_auxiliar, by = "regiao")) %>% 
+  ggplot() +
+  geom_sf(aes(fill = `2019` > `2020`), show.legend = FALSE, 
+          color = "transparent", size = 1/100000) +
+  scale_fill_manual(values = c("#FF0000", "#DED7D7", "#DED7D7")) +
+  ggtitle(label = "Crescimento de CVLI nas regiões", 
+          subtitle = "Em destaque regiões que tiveram aumento") +
+  tema()
+
+```
+
 
 ## Incidências de crime
 
 Temos regiões com mais crime que covid?
 
-```{r}
-# criar um mapa por região
-# colocar se aquela região tem mais mortes por crime ou por covid
-
-# colocar se tem mais incidêcia de casos X crimes contra o patrimônio
-```
-
 Temos uma pandemia de violência?
 
-```{r}
-# olhar cidades com crimes > covid e < covid
+Vamos olhar para as cidades que tiveram ao menos um registro de óbito por COVID. Elas totalizam `r covid_sp %>% filter(obitosAcumulado > 0, mes == max(mes)) %>% nrow()` cidades.
 
+Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID do que por CVLI. Embora imperfeita, a comparação é possível considerando que o resultado dos CVLI é praticamente sempre o óbito.
+
+```{r tabela_cidades_mais_covid, echo=FALSE, message=FALSE, warning=FALSE}
+# tabela mostrando cidades com mais mortes por COVID
 tabela_cvli_mortalidade <- covid_sp %>% 
    filter(mes == max(mes), obitosAcumulado > 0) %>% 
   left_join(ssp_sumarizada %>% 
@@ -431,19 +496,11 @@ tabela_cvli_mortalidade <- covid_sp %>%
                           "covid"))) %>% 
   unique()
 
-```
-
-Vamos olhar para as cidades que tiveram ao menos um registro de óbito por COVID. Elas totalizam `r covid_sp %>% filter(obitosAcumulado > 0, mes == max(mes)) %>% nrow()` cidades.
-
-Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID do que por CVLI. Embora imperfeita, a comparação é possível considerando que o resultado dos CVLI é praticamente sempre o óbito.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# tabela mostrando cidades com mais mortes por COVID
-
 tabela_cvli_mortalidade %>% 
   filter(causa_maior == "covid") %>% 
   arrange(-populacao) %>% 
-   knitr::kable(digits = 1, align = "c") %>% 
+   knitr::kable(digits = 1, align = "c", 
+               format.args = list(big.mark = ".", decimal.mark = ",")) %>% 
    kableExtra::kable_paper("hover", full_width = F)
 ```
 
