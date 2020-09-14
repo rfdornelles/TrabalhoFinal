@@ -1,6 +1,8 @@
 ---
 output: github_document
 always_allow_html: true
+editor_options: 
+  chunk_output_type: inline
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -13,18 +15,40 @@ knitr::opts_chunk$set(
 
 ```
 
+```{r afazer, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+# TERMINAR TEXTO!!!! IMPORTANTE
+# colocar linha de tendências nos gráficos de criminalidade
+# Tabela: arrumar labels dos fatores de crime
+# Tabela: arrumar nome das colunas
+# Tabela: arrumar delta <U+0394>
+# Texto: formatação
+
+# Colocar caption nas tabelas e nos mapas
+# Colocar o Norte nos mapas
+
+#### Mudar o repositório para público
+#### Enviar o link
+
+```
+
 ```{r inicio, message=FALSE, warning=FALSE, include=FALSE}
 # Rodar arquivo de análises
-source(file = "R/Juntar-Analises.R")
+source(file = "R/1-Juntar-Analises.R", encoding = 'UTF-8')
 
-# Carregar bases originais
-ssp_original <- readr::read_rds("data-raw/ssp.rds")
-covid_original <- readr::read_rds("data-raw/covid.rds")
+# Rodar arquivo que monta as tabelas
+source(file = "R/2-Tabelas.R", encoding = 'UTF-8')
 
-# Rodar arquivo que traz parâmetros para os gráficos
-source(file = "R/Gerar-Mapas.R")
+# Rodar arquivo que cria os gráficos
+source(file = "R/3-Graficos.R", encoding = 'UTF-8')
+
+# Rodar arquivo que cria os mapas
+source(file = "R/4-Mapas.R", encoding = 'UTF-8')
 
 # Chamar pacotes úteis
+library(dplyr)
+library(ggplot2)
+library(sf)
 library(patchwork)
 ```
 
@@ -105,18 +129,8 @@ A fim de que se pudesse tornar os dados estudados comparáveis em algumas medida
 
 ```{r mapa_regioes, echo=FALSE, message=FALSE, warning=FALSE}
 
-mapa_sp %>% 
-  left_join(tabela_auxiliar) %>% 
-  ggplot(mapping = aes(fill = regiao)) +
-  geom_sf(show.legend = FALSE, colour = "transparent", size = 1/100000) +
-  scale_fill_brewer(palette = "Paired") +
-  geom_sf_text(data = mapa_sp %>% 
-                 left_join(tabela_auxiliar) %>% 
-                 filter(municipio == regiao | municipio == "São Paulo" | municipio == "Carapicuiba"), 
-      aes(label = regiao), 
-      show.legend = FALSE, size = 3,
-      nudge_x = 0.2, nudge_y = 0.1,check_overlap = T) +
-  tema()
+mapa_regioes
+
 ```
 
 ## ESTADO DE SÃO PAULO E A COVID-19
@@ -128,91 +142,6 @@ Por outro lado, o Estado de São Paulo foi por muito tempo o "epicentro" da pand
 Válido, portanto, retomar um pouco dos impactos da COVID no país
 
 ```{r graficos_e_mapas-covid, echo=FALSE, message=FALSE, warning=FALSE}
-
-# Criar os gráficos
-casos_nacional <- covid_original %>% 
-  filter(regiao != "Brasil", !is.na(estado), is.na(municipio)) %>% 
-  group_by(data, regiao) %>% 
-  summarise(casosAcumulado = sum(casosAcumulado)) %>% 
-  ggplot(aes(x = data, y = casosAcumulado, 
-             color = regiao)) +
-  geom_line(show.legend = FALSE) +
-  scale_y_log10() +
-  ylab(NULL) +
-  xlab(NULL) +
-  theme_classic() +
-  ggtitle("Casos acumulados") 
-
-obitos_nacional <- covid_original %>% 
-  filter(regiao != "Brasil", !is.na(estado), is.na(municipio)) %>% 
-  group_by(data, regiao) %>% 
-  summarise(obitosAcumulado = sum(obitosAcumulado)) %>% 
-  ggplot(aes(x = data, y = obitosAcumulado, 
-             color = regiao)) +
-  geom_line() +
-  scale_y_log10() +
-  ylab(NULL) +
-  xlab(NULL) +
-  theme_classic() +
-  ggtitle("Óbitos acumulados") 
-
-incidencia <- covid_sumarizada %>%
-  filter(variavel == "incidencia") %>% 
-  group_by(mes) %>%
-  summarise(soma = sum(quantidade)) %>%
-  ggplot(aes(x = mes, y = soma)) +
-  geom_line(size = 2) +
-  ylab(NULL) +
-  xlab(NULL) +
-  theme_classic() 
-
-mortalidade <- covid_sumarizada %>%
-  filter(variavel == "mortalidade") %>% 
-  group_by(mes) %>%
-  summarise(soma = sum(quantidade)) %>%
-  ggplot(aes(x = mes, y = soma)) +
-  geom_line(size = 2) +
-  ylab(NULL) +
-  xlab(NULL) +
-  theme_classic() 
- 
-# Criar os mapas
-
-# Incidência
-mapa_incidencia_br <- mapa_br %>% 
-  left_join(covid_original %>% 
-  filter(regiao != "Brasil", !is.na(estado), is.na(codmun),
-         data == max(data)) %>% 
-  select(estado, populacaoTCU2019, casosAcumulado) %>% 
-  group_by(estado) %>% 
-  mutate(
-    incidencia = (casosAcumulado/populacaoTCU2019)*100000
-  ),
-  by = c("abbrev_state" = "estado")) %>% 
-  ggplot() +
-  geom_sf(aes(fill = incidencia), show.legend = F) +
-  geom_sf_text(mapping = aes(label = abbrev_state), size = 2) +
-  scale_fill_gradient(low = "#FFDFBD", high = "#914B00") +
-  tema()
-
-# Mortalidade
-mapa_mortalidade_br <- mapa_br %>% 
-  left_join(covid_original %>% 
-              filter(regiao != "Brasil", !is.na(estado), is.na(codmun),
-                     data == max(data)) %>% 
-              select(estado, populacaoTCU2019, obitosAcumulado) %>% 
-              group_by(estado) %>% 
-              mutate(
-                obitos = (obitosAcumulado/populacaoTCU2019)*100000
-              ),
-            by = c("abbrev_state" = "estado")) %>% 
-  ggplot() +
-  geom_sf(aes(fill = obitos), show.legend = F) +
-  geom_sf_text(aes(label = abbrev_state), size = 2) +
-  scale_fill_gradient(low = "#FAD7D7", high = "#7A1010") +
-  tema()
-
-#gganimate::animate(, end_pause = 40)
 
 # Dispor os gráficos
 casos_nacional + obitos_nacional + plot_annotation(
@@ -229,62 +158,9 @@ Podemos ver que
 
 ```{r tabela_mapa_covid_incidencia_mortalidade, echo=FALSE, message=FALSE, warning=FALSE}
 
-# Banco dos casos em SP
-covid_sp <- readr::read_rds("data/COVID-sp.rds") %>%
-  select(municipio,code_muni, data,
-         populacao = populacaoTCU2019, casosAcumulado,
-         obitosAcumulado) %>%
-  # 1. reunir com a tabela auxiliar para obter a mesma região que vai ser
-  # usada na SSP - reduz para 12+NA regiões
-  left_join(tabela_auxiliar %>%
-              select(-populacao, -code_muni)) %>%
-  relocate(regiao) %>%
-  # 2. organizo por mês (ano vai ser sempre 2020), sendo que o último dia do
-  # mês representa aquele total (afinal, os dados são acumulados)
-  mutate(mes = lubridate::month(data),
-         dia = lubridate::day(data)) %>% #ano sempre será 2020
-  # 3. vou agrupar por região/mês e selecionar o último dia de cada mês
-  filter(dia == max(dia)) %>%
-  # 4. sumarizar por incidência de casos e por mortes relativas para cada
-  # região
-  mutate (
-    incidencia = (casosAcumulado / populacao) * 100000,
-    mortalidade = (obitosAcumulado / populacao) * 100000,
-    incidencia = tidyr::replace_na(incidencia, 0),
-    mortalidade = tidyr::replace_na(incidencia, 0)
-  )
-
 # Tabela 
-
-covid_sumarizada %>%
-  filter(mes == max(mes), !is.na(regiao)) %>%
-  tidyr::pivot_wider(
-    names_from = "variavel",
-    values_from = "quantidade"
-  ) %>% 
-  select(-mes, Região = regiao, `Tx. Incidência` = incidencia,
-         `Tx. Mortalidade` = mortalidade)  %>% 
+tabela_mapa_covid_incidencia_mortalidade %>% 
  knitr::kable(digits = 1, align = "c", format.args = list(big.mark = ".", decimal.mark = ","))
-
-# Mapas
-
-mapa_sp_incidencia <- mapa_sp %>% 
-  left_join(covid_sp %>% 
-              filter(mes == max(mes)), by = "code_muni") %>% 
-  ggplot(mapping = aes(fill = incidencia)) +
-  ggtitle(label = NULL, subtitle = "Incidência de casos") +
-  geom_sf(show.legend = FALSE, color = "transparent", size = 1/100000) +
-  scale_fill_gradient(low = "#FFDFBD", high = "#914B00") +
-  tema()
-
-mapa_sp_mortalidade <- mapa_sp %>% 
-  left_join(covid_sp %>% 
-              filter(mes == max(mes)), by = "code_muni") %>% 
-  ggplot(mapping = aes(fill = mortalidade)) +
-  ggtitle(label = NULL, subtitle = "Mortalidade de casos") +
-  geom_sf(show.legend = FALSE, color = "transparent", size = 1/100000) +
-  scale_fill_gradient(low = "#FAD7D7", high = "#7A1010") +
-  tema()
 
 # Montar mapas com patchwork
 
@@ -298,40 +174,16 @@ mapa_sp_incidencia + mapa_sp_mortalidade + plot_annotation("Casos de COVID-19 em
 Dizer alguma coisa que a tendência é de queda
 
 ```{r grafico_tendencia_crime, echo=FALSE, message=FALSE, warning=FALSE}
-ssp_sumarizada_projecao %>%
-  ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = tipo_crime)) +
-  scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
-  geom_col(position = "stack") +
-  theme_classic() +
-  labs(title = "Evolução geral de ocorrências criminais em SP",
-       subtitle = "De 2002 a 2020*",
-       caption = "*estimativa") +
-  ylab(label = "Ocorrências por 100mil/hab") +
-  xlab(label = NULL) +
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+grafico_tendencia_crime
 
 ```
 
 São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
 
 ```{r grafico_crimes_evolucao, echo=FALSE, message=FALSE, warning=FALSE}
-ssp_sumarizada_projecao %>%
-  ggplot(mapping = aes(x = ano, y = qnt_relativa, fill = ano)) +
-  scale_fill_gradient(low="#945E00", high="#00948C") +
-  scale_x_continuous(breaks = ssp_sumarizada_projecao$ano) +
-  geom_col(position = "dodge", show.legend = F) +
-  facet_grid(factor(tipo_crime, 
-      labels = c("Acidentes", "Pessoa", 
-                 "CVLI", 
-                 "Patrimônio")) ~ ., scales = "free_y") +
-  theme_classic() +
-  labs(title = "Evolução por categorias de crimes",
-       subtitle = "De 2002 a 2020*",
-       caption = "*estimativa") +
-  ylab(label = "Ocorrências por 100mil/hab") +
-  xlab(label = NULL) +
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
 
+grafico_crimes_evolucao
 
 ```
 
@@ -342,34 +194,7 @@ ssp_sumarizada_projecao %>%
 ```{r tabela_quarentena, echo=FALSE, message=FALSE, warning=FALSE}
 # Tabela mostrando redução
 
-ssp_sumarizada_projecao %>% 
-  left_join(tabela_auxiliar %>% 
-              group_by(regiao) %>% 
-              summarise(populacao = sum(populacao))
-            ) %>% 
-  select(-qnt_relativa) %>% 
-  tidyr::pivot_wider(
-    names_from = tipo_crime,
-    values_from = quantidade
-  ) %>% 
-  select(-regiao) %>% 
-  group_by(ano) %>% 
-  summarise(
-    CVLI = (sum(CVLI)/sum(populacao))*100000,
-    patrimonio = (sum(patrimonio)/sum(populacao))*100000,
-    contra_pessoa = (sum(contra_pessoa)/sum(populacao))*100000,
-    acidentes = (sum(acidentes)/sum(populacao))*100000
-  ) %>% 
-  filter(ano >= 2015) %>% 
-  tidyr::pivot_longer(
-    cols = CVLI:acidentes,
-    names_to = "Crime",
-    values_to = "Taxa"
-  ) %>% 
-  tidyr::pivot_wider(
-    values_from = Taxa,
-    names_from = ano
-  ) %>%
+tabela_quarentena %>%
   knitr::kable(digits = 1, align = "c", 
                format.args = list(big.mark = ".", decimal.mark = ",")) %>% 
   kableExtra::kable_paper("hover", full_width = F) %>% 
@@ -400,21 +225,8 @@ Levantar o ponto da letalidade policial
 #### Regiões que tiveram aumento
 
 ```{r grafico_crimes_SP, echo=FALSE, message=FALSE, warning=FALSE}
-# mapa destacando regiões onde houve aumento
 
-grafico_animado1 <- ssp_sumarizada_projecao %>%
-  ggplot(mapping = aes(x = ano, y = qnt_relativa, color = regiao)) +
-  geom_line() +
-  facet_grid(factor(tipo_crime, 
-                    labels = c("Acidentes", "Pessoa", 
-                               "CVLI", "Patrimônio")) ~ ., 
-             scales = "free_y") +
-  geom_point() +
-  theme_classic() +
-  scale_color_brewer(palette = "Paired") +
-  gganimate::transition_reveal(ano)
-
-gganimate::animate(grafico_animado1, end_pause = 40)
+gganimate::animate(grafico_crimes_SP, end_pause = 40)
 
 ```
 
@@ -424,28 +236,6 @@ Pertinente, então, observarmos **quais** regiões tiveram esse comportamento.
 
 ```{r tabela_diferenças_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
 
-tabela_diferencas_CVLI <- ssp_sumarizada_projecao %>% 
-  left_join(tabela_auxiliar %>% 
-              group_by(regiao) %>% 
-              summarise(populacao = sum(populacao))
-  ) %>% 
-  filter(ano >= 2019, tipo_crime == "CVLI", !is.na(regiao)) %>% 
-  tidyr::pivot_wider(
-    names_from = tipo_crime,
-    values_from = quantidade
-  ) %>% 
-  #select(-regiao) %>% 
-  group_by(regiao, ano, populacao) %>% 
-  summarise(
-    CVLI = (sum(CVLI)/sum(populacao))*100000,
-  ) %>% 
-  tidyr::pivot_wider(
-    names_from = "ano",
-    values_from = "CVLI"
-  ) %>% 
-  mutate(
-    diferenca = (`2020`-`2019`)/`2019`*100
-  ) 
 tabela_diferencas_CVLI %>% 
   knitr::kable(col.names = c("Região", "População", "2019", "2020", "Δ%"),
                digits = 1, align = "c", 
@@ -454,19 +244,9 @@ tabela_diferencas_CVLI %>%
 ```
 Observamos então que as regiões de Araçatuba, Bauru,
 
-```{r mapa_diferenças_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
+```{r mapa_diferencas_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
 
-mapa_sp %>% 
-  left_join(
-    tabela_diferencas_CVLI %>% 
-      left_join(tabela_auxiliar, by = "regiao")) %>% 
-  ggplot() +
-  geom_sf(aes(fill = `2019` > `2020`), show.legend = FALSE, 
-          color = "transparent", size = 1/100000) +
-  scale_fill_manual(values = c("#FF0000", "#DED7D7", "#DED7D7")) +
-  ggtitle(label = "Crescimento de CVLI nas regiões", 
-          subtitle = "Em destaque regiões que tiveram aumento") +
-  tema()
+mapa_diferencas_CVLI 
 
 ```
 
@@ -482,27 +262,15 @@ Vamos olhar para as cidades que tiveram ao menos um registro de óbito por COVID
 Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID do que por CVLI. Embora imperfeita, a comparação é possível considerando que o resultado dos CVLI é praticamente sempre o óbito.
 
 ```{r tabela_cidades_mais_covid, echo=FALSE, message=FALSE, warning=FALSE}
-# tabela mostrando cidades com mais mortes por COVID
-tabela_cvli_mortalidade <- covid_sp %>% 
-   filter(mes == max(mes), obitosAcumulado > 0) %>% 
-  left_join(ssp_sumarizada %>% 
-              filter(ano == 2020, tipo_crime == "CVLI")) %>% 
-  group_by(municipio, populacao) %>% 
-  summarise(
-    CVLI = (quantidade/populacao)*100000,
-    obito_covid = (obitosAcumulado/populacao)*100000,
-    causa_maior = as.factor(if_else(CVLI > obito_covid,
-                          "crime",
-                          "covid"))) %>% 
-  unique()
 
 tabela_cvli_mortalidade %>% 
-  filter(causa_maior == "covid") %>% 
-  arrange(-populacao) %>% 
    knitr::kable(digits = 1, align = "c", 
                format.args = list(big.mark = ".", decimal.mark = ",")) %>% 
    kableExtra::kable_paper("hover", full_width = F)
 ```
+## Conclusão?
+
+Blablabla
 
 ## Próximos temas
 

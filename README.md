@@ -675,7 +675,7 @@ Sorocaba
 
 Observamos então que as regiões de Araçatuba, Bauru,
 
-![](README_files/figure-gfm/mapa_diferenças_CVLI-1.png)<!-- -->
+![](README_files/figure-gfm/mapa_diferencas_CVLI-1.png)<!-- -->
 
 ## Incidências de crime
 
@@ -939,6 +939,10 @@ covid
 </tbody>
 
 </table>
+
+## Conclusão?
+
+Blablabla
 
 ## Próximos temas
 

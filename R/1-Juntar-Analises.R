@@ -9,6 +9,9 @@
 
 library(dplyr)
 library(ggplot2)
+library(sf)
+library(patchwork)
+
 options(scipen = 9999999999999)
 
 # Carregar SSP
@@ -16,6 +19,11 @@ ssp <- readr::read_rds("data/ssp-arrumada.rds")
 
 # Carregar COVID-SP
 covid_sp <- readr::read_rds("data/COVID-sp.rds")
+
+# Carregar bases originais
+ssp_original <- readr::read_rds("data-raw/ssp.rds")
+covid_original <- readr::read_rds("data-raw/covid.rds")
+
 
 #### Tabela auxiliar ####
 
@@ -170,6 +178,3 @@ ssp_sumarizada_projecao <- ssp_sumarizada %>%
 # 8. retirar a coluna de populacao e desagrupar
   select(-populacao) %>%
   ungroup()
-
-#### Remover bases sobressalente ####
-rm(ssp, covid_sp, peso_quadrimestres)
