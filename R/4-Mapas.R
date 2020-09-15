@@ -32,20 +32,20 @@ tema <- function() {
   )
 }
 
-gera_mapa2 <- function(coluna, tabela = covid_sp, mapa = mapa_sp) {
+# gera_mapa2 <- function(coluna, tabela = covid_sp, mapa = mapa_sp) {
+#
+#   mapa %>%
+#     left_join(tabela) %>%
+#     ggplot(mapping = aes(fill = {{coluna}})) +
+#     geom_sf() +
+#     annotation_custom(img_norte, xmin = 35, ymin = 2) +
+#     tema()
+# }
 
-  mapa %>%
-    left_join(tabela) %>%
-    ggplot(mapping = aes(fill = {{coluna}})) +
-    geom_sf() +
-    annotation_custom(img_norte, xmin = 35, ymin = 2) +
-    tema()
-}
-
-### Norte
-
-img_norte <- png::readPNG("data/norte.png") %>%
-  grid::rasterGrob()
+# ### Norte
+#
+# img_norte <- png::readPNG("data/norte.png") %>%
+#   grid::rasterGrob()
 
 
 #### mapa_regioes ###################################################
@@ -58,7 +58,8 @@ mapa_regioes <- mapa_sp %>%
   scale_fill_brewer(palette = "Paired") +
   geom_sf_text(data = mapa_sp %>%
                  left_join(tabela_auxiliar) %>%
-                 filter(municipio == regiao | municipio == "São Paulo" | municipio == "Carapicuiba"),
+                 filter(municipio == regiao | municipio == "São Paulo" |
+                        municipio == "Carapicuiba"),
                aes(label = regiao),
                show.legend = FALSE, size = 3,
                nudge_x = 0.2, nudge_y = 0.1,check_overlap = T) +
@@ -108,7 +109,7 @@ mapa_sp_incidencia <- mapa_sp %>%
   left_join(covid_sp %>% filter(mes == max(mes)),
             by = c("code_muni" = "code_muni")) %>%
   ggplot(mapping = aes(fill = incidencia)) +
-  ggtitle(label = NULL, subtitle = "Incidência de casos") +
+  ggtitle(label = NULL, subtitle = "Taxa de incidência de casos") +
   geom_sf(show.legend = FALSE, color = "transparent", size = 1/100000) +
   scale_fill_gradient(low = "#FFDFBD", high = "#914B00") +
   tema()
@@ -117,7 +118,7 @@ mapa_sp_mortalidade <- mapa_sp %>%
   left_join(covid_sp %>%
               filter(mes == max(mes)), by = "code_muni") %>%
   ggplot(mapping = aes(fill = mortalidade)) +
-  ggtitle(label = NULL, subtitle = "Mortalidade de casos") +
+  ggtitle(label = NULL, subtitle = "Taxa de mortalidade por COVID-19") +
   geom_sf(show.legend = FALSE, color = "transparent", size = 1/100000) +
   scale_fill_gradient(low = "#FAD7D7", high = "#7A1010") +
   tema()

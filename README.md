@@ -6,53 +6,63 @@
 ## APRESENTAÇÃO
 
 O presente trabalho visa realizar uma singela análise sobre os índices
-de criminalidade no Estado de São Paulo e compará-los aos números da
+de criminalidade no Estado de São Paulo em conjunto com os números da
 pandemia causada pela COVID-19.\[2\]
 
-Pretendemos verificar as consequências da pandemia (dentre eles, a breve
-quarentena que se verificou no estado) e levantar algumas reflexões
-sobre os impactos da violência. Dentre as perguntas que se pretende
-refletir (mas sem a pretensão de oferecer respostas):
+Pretendemos, partindo do contexto da pandemia (um evento novo, que gerou
+e ainda gera grande comoção), levantar algumas reflexões sobre os
+impactos da violência, que além de velha conhecida no Estado,
+aparentemente já foi normalizada em muitos sentidos. Dentre as perguntas
+que se pretende instigar (mas sem a pretensão de oferecer respostas):
 
 1.  *Qual é, em linhas gerais, a **tendência de evolução** da incidência
-    criminal em SP? Os crimes têm, ao longo das últimas décadas
+    criminal em SP? Os crimes têm, ao longo das últimas duas décadas
     **diminuído** ou **aumentado**?*
 
-2.  *É possível visualizar **tendências** nas diferentes regiões da
+2.  *É possível visualizar **tendências** diferentes nas regiões da
     cidade*?
 
 3.  *Como foi o comportamento dessas tendências **durante os meses em
     que a quarentena** em SP foi mais intensa*? *Houve **padrão** nos
     distintos tipos de crime e nas distintas regiões*?
 
-4.  S*e houve comportamento fora do padrão ou **inesperado**, quais
-    poderiam ser as razões*?
-
 Ao final, queremos instigar a seguinte provocação na leitora e no
-leitor: as projeções e sonhos que temos para um “novo normal” não
-deveriam ter em mente, também, a “pandemia” de violência em nosso
-Estado?
+leitor: Será que a violência em São Paulo é também “pandêmica”, isto é,
+comparável em magnitude ao que vem ocorrendo com a COVID-19? Será que,
+em alguma medida, não vivemos, também, uma ***duradoura*** **e *grave*
+pandemia de violência** no Estado? Que “novo normal” poderemos
+idealizar, sonhar e construir diante do “velho anormal”?
+
+Para isso, antes de prosseguir, responda mentalmente à seguinte questão:
+***temos mais vítimas por COVID-19 ou por crimes violentos***?
 
 ## DADOS UTILIZADOS
 
-Vamos analisar as bases :
+Para tentar orientar as reflexões propostas, vamos analisar as bases :
 
   - `COVID`, contendo [dados coletados e tratados pela equipe da
     Curso-R](https://www.youtube.com/watch?v=ja2AbTFN4yk&ab_channel=Curso-R)
     a partir de webscrap do [site do Ministério da
-    Saúde](http://covid.saude.gov.br). Os dados estão atualizados
-    15/06/2020;
+    Saúde](http://covid.saude.gov.br). Os dados estão atualizados até
+    15/06/2020, inclusive, e nos trazem informações importantes sobre os
+    impactos da pandemia em todo o país.
   - `SSP`, oriundos da mesma Curso-R, com dados extraídos da [Secretaria
     de Segurança Pública de São
     Paulo](http://www.ssp.sp.gov.br/transparenciassp/Consulta.aspx). Os
-    dados são de janeiro de 2002 até abril de 2020.
+    dados são de janeiro de 2002 até abril de 2020, a trazem uma rica
+    série histórica das principais ocorrências criminais no Estado.
+
+Embora cada uma delas possa render inúmeras análises interessantíssimas,
+diante da inquietude das questões apresentadas acima optou-se por olhar
+para elas em conjunto.
 
 ## METODOLOGIA
 
 Ambas as bases, embora pré-processadas e em formato *tidy*, receberam
 tratamento a fim de torná-las comparáveis entre si. O detalhamento dos
 passos fica mais evidente nos comentários nos arquivos nas pastas `/R` e
-`/data-raw`, porém a seguir trazemos os aspectos mais significativos.
+`/data-raw`, porém a seguir trazemos os aspectos mais significativos das
+manipulações realizadas.
 
 ### *Tratamento dos dados da COVID*
 
@@ -61,10 +71,10 @@ variáveis como a quantidade de novos casos, casos recuperados, etc, uma
 vez que o foco da análise se deu sobre dois indicadores:
 
   - **Incidência de casos**: ou seja, a quantidade de casos confirmados
-    por 100 mil habitantes
+    por 100 mil habitantes em um determinado município.
 
   - **Mortalidade** (ou incidência de mortes): a quantidade de óbitos
-    confirmados por 100 mil habitantes
+    confirmados por 100 mil habitantes naquele mesmo município.
 
 |                                                                                                                               Variáveis originais                                                                                                                                |         Variáveis finais          |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------: |
@@ -76,21 +86,27 @@ vez que o foco da análise se deu sobre dois indicadores:
 
 A base originalmente continha variáveis em sub-espécies dos crimes
 cometidos, separando por exemplo homicídios de homicídios culposos. Para
-melhor aproveitamento dos dados, considerando os bens jurídicos
-inerentes a cada tipo penal, as hipóteses originais foram dividas em
-quatro grupos:
+melhor aproveitamento dos dados, embora se leve em conta os bens
+jurídicos inerentes a cada tipo penal\[3\], conforme se estrutura do
+[Código Penal
+Brasileiro](http://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm),
+os crimes foram agrupados por sua natureza e não necessariamente por sua
+topologia no código.
+
+As hipóteses originais foram dividas em quatro grupos:
 
   - **Crimes Violentos Letais Intencionais (CVLI)**: reunindo homicídios
     dolosos, latrocínio (também chamado de roubo seguido de morte) e
     lesão corporal seguida de morte. Para fins desse estudo, se incluiu
     nesse grupo também os homicídios tentados (que, por definição, são
     intencionais), ainda que o óbito não tenha necessariamente ocorrido.
+    \[4\]
 
   - **Crimes contra o patrimônio**: Reunindo roubos (exceto se
     resultantes em óbito) e furtos (de qualquer tipo).
 
-  - **Outros crimes contra a pessoa**: Reunindo estupros (em todas as
-    modalidades) e lesões corporais. Sabe-se que ambos possuem grande
+  - **Outros crimes contra a pessoa**: Reunindo estupros\[5\] (em todas
+    as modalidades) e lesões corporais. Sabe-se que ambos possuem grande
     diferença quanto aos contextos criminológicos em que ocorrem, porém
     apenas e exclusivamente para fins metodológicos fez sentido
     agrupá-los aquo.
@@ -120,31 +136,39 @@ medidas, adotou-se os seguintes padrões:
 
   - Como as bases possuiam recortes temporais distintos, os dados de
     segurança da `SSP`foram *projetados até o final do an*o,
-    considerando as tendências até abril/2020.
+    considerando as tendências até abril/2020. Ou seja, levando-se em
+    conta os dados do primeiro quadrimestre de 2020, procurou projetar
+    os números até o fim do ano.
 
   - As **regiões** da Segurança Pública (base `SSP`) foram aproveitadas
     também para os dados da pandemia (base `COVID`). Assim, os dados
-    foram apresentados considerando as mesmas 12 regiões.
+    foram apresentados considerando as mesmas 12 regiões, recebendo na
+    maioria dos casos os nomes de uma das cidades que a representam.
+    Abaixo a visualização geo-espacial de cada uma delas:
 
 ![](README_files/figure-gfm/mapa_regioes-1.png)<!-- -->
 
 ## ESTADO DE SÃO PAULO E A COVID-19
 
 Como é sabido, o Brasil chegou rapidamente aos países com mais casos no
-mundo. Ao contrário do que se disse, esse número não se deu unicamente
-em razão da grandeza de sua população.
+mundo, mesmo havendo reconhecida subnotificação e negacionismo por parte
+de autoridades públicas. Não iremos adentrar nas razões (e nas omissões)
+que nos trouxeram até aqui, porém é importante ressaltar que a gravidade
+da pandemia em nosso país é sem precedentes recentes.
 
-Por outro lado, o Estado de São Paulo foi por muito tempo o “epicentro”
-da pandemia no país. Além de sua alta população, possivelmente houve
-influência da sua alta urbanização dentre muitos outros fatores.
-
-Válido, portanto, retomar um pouco dos impactos da COVID no país
+Vejamos:
 
 ![](README_files/figure-gfm/graficos_e_mapas-covid-1.png)<!-- -->![](README_files/figure-gfm/graficos_e_mapas-covid-2.png)<!-- -->![](README_files/figure-gfm/graficos_e_mapas-covid-3.png)<!-- -->
 
 ### Incidência de casos e Mortalidade em SP
 
-Podemos ver que
+Por outro lado, o Estado de São Paulo foi por muito tempo o “epicentro”
+da pandemia no país, na medida em que - se imagina - que foram onde se
+originaram os primeiros casos, irradiando o contágio comunitário para
+outros cantos do país.
+
+Oportuno, portanto, olhar um pouco dos indicadores da COVID-19 no
+Estado:
 
 |        Região         | Tx. Incidência | Tx. Mortalidade |
 | :-------------------: | :------------: | :-------------: |
@@ -163,21 +187,38 @@ Podemos ver que
 
 ![](README_files/figure-gfm/tabela_mapa_covid_incidencia_mortalidade-1.png)<!-- -->
 
+Fica claro que, a despeito das diferenças regionais de intensidade, a
+pandemia teve (e ainda tem) grande impacto em todo o território.
+
 ## O CRIME E O ESTADO DE SÃO PAULO
 
 ### Tendências
 
-Dizer alguma coisa que a tendência é de queda
+Vamos observar a evolução de ocorrências criminais registradas de 2002
+até 2020.
 
 ![](README_files/figure-gfm/grafico_tendencia_crime-1.png)<!-- -->
 
-São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
+É bastante evidente que há uma constante queda geral no número de
+ocorrências nos últimos anos, sobretudo a partir da segunda metade da
+década passada. Existem diversos fatores, por certo, que explicam essa
+queda, todos eles fora de nossos objetivos aqui.
 
-![](README_files/figure-gfm/grafico_crimes_evolucao-1.png)<!-- -->
+No que pese a explicação das razões que levam a essa queda estejam fora
+de nosso objetivo, faz sentido aqui olhar para cada uma das quatro
+categorias individualmente, afim de verificar se esses números se
+refletiram em todas elas.
 
 ### Criminalidade durante a pandemia
 
-#### Quarentena
+Por outro lado, a despeito de existir uma tendência de redução do
+cômputo de casos em números gerais, ao olhar para o comportamento das
+diversas categorias podemos perceber diferenças entre elas:
+
+![](README_files/figure-gfm/grafico_crimes_evolucao-1.png)<!-- -->
+
+O gráfico pode ser complementado pela tabela abaixo, focada nos últimos
+5 anos:
 
 |     Crime      |  2015   |  2016   |  2017   |  2018   |  2019   |  2020   |
 | :------------: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
@@ -186,28 +227,56 @@ São Paulo, crimes, bla bla bla Tendência de queda por diversos fatores
 | contra\_pessoa |  325,3  |  327,6  |  323,4  |  306,1  |  312,5  |  262,5  |
 |   acidentes    |  264,6  |  231,5  |  212,0  |  182,8  |  179,8  |  134,2  |
 
-Durou em especial nos primeiros meses
+## Perguntas importantes (e sem respostas)
 
-Qual impacto teve nos índices?
+A queda generalizada nos registros criminais chama parece fazer sentido
+se considerada a tendência geral e já há alguns anos. Porém, o fato de
+não haver a mesma redução e - pior - um ligeiro aumento nos CVLI traz
+questões importantes.
 
-#### Perguntas importantes
+#### Houve redução real nas ocorrências ou, meramente, aumento na subnotificação de crimes?
 
-Houve diminuição ou aumento dos crimes?
+Por um lado, o fato de haver menor número de pessoas circulando parece
+justificar uma menor incidência de crimes contra o patrimônio, acidentes
+e crimes contra a pessoa. Por outro lado, os CVLI têm como peculiaridade
+a baixa taxa de subnotificação por natureza - afinal, a morte de uma
+pessoa dificilmente passa sem ser notada. Mas o que explicaria o
+aumento?
 
-Houve diminuição das ocorrências de crimes contra o patrimônio?
+Além disso, é preciso notar que parte importante dos equipamentos
+públicos - delegacias de polícia inclusas - fecharam as portas total ou
+parcialmente durante os meses iniciais da pandemia. Isso pode ter levado
+a um desencorajamento do reporte de crimes, ainda que parte relevante
+deles seja passível de notificação mediante Boletim de Ocorrência
+eletrônico.
 
-Lesões corporais e estupros - como foram? pessoas em casa
+Ainda, se essa hipótese - a mera subnotificação - se mostrar verdadeira,
+um alarme deveria soar perante as autoridades públicas: é plausível
+imaginar que mais crimes de estupro e, pior, estupro de vulnerável,
+tenham aumentado ainda mais durante o período de isolamento. Sabe-se, há
+tempos, que [parte relevante desses casos ocorre em ambientes
+domésticos](http://g1.globo.com/bom-dia-brasil/noticia/2014/08/quase-70-dos-estupros-acontecem-em-ambientes-domesticos-diz-policia.html).
 
-Acidentes de carro - diminuição da circulação, fechamento dos bares,
-lojas de conveniência, etc
+#### Mortes decorrentes de intervenção policial?
 
-Fechamento das delegacias na pandemia\!\!\!
+Um fato digno de nota que coincidiu com os primeiros meses da pandemia
+foi a comoção em torno da morte do afroamericano **George Floyd**, que
+deu início a manifestações em diversos pontos do mundo. No Brasil, o
+movimento negro há anos denuncia os grandes números de casos de mortes
+causadas pela polícia, em contextos das chamadas “intervenções
+policiais”.
 
-Mas e os CVLI? Qual o impacto? Esses tendem a ter menos subnotificação
+Foge do escopo desse estudo nos aprofundarmos nesse tema. Inclusive, o
+banco SSP não continha os dados para essas ocorrências e,
+consequentemente, ela não foi computada. O que ocorre, por outro lado, é
+que [estudos apontam o crescimento desses números durante o ano
+de 2020](https://www1.folha.uol.com.br/cotidiano/2020/07/letalidade-policial-bate-recorde-e-homicidios-durante-a-pandemia-em-sp.shtml),
+independnetemente de haver correlação (e não causalidade) com a
+pandemia.
 
-Levantar o ponto da letalidade policial
+#### Todas as regiões tiveram comportamento semelhante?
 
-#### Regiões que tiveram aumento
+É importante
 
 ![](README_files/figure-gfm/grafico_crimes_SP-1.gif)<!-- -->
 
@@ -964,3 +1033,26 @@ para estudos futuros e mais aprofundados:
 2.  Ele se dá no contexto de conclusão do [Curso de R para Ciência de
     Dados](https://www.curso-r.com/cursos/r4ds-2/) e, portanto, não tem
     grandes pretensões científicas.
+
+3.  De acordo com as teorias clássicas do Direito Penal. Grosso modo,
+    poderia se dizer que o bem juridico penal é aquele valor protegido
+    pelo direito penal em cada um dos crimes. Essa ideia permeia todo o
+    Código Penal. Por exemplo, o homicídio (Art. 121) se encontra no
+    título I, “*Dos Crimes contra a pessoa*”, e, neste, no Capítulo I,
+    “*Dos crimes contra a vida*”.
+
+4.  A classificação em CVLI é seguida pela SENASP-MJ e dá mais ênfase ao
+    resultado (vulneração da vida) do que na conceituação jurídica dos
+    atos (na prática, isso permite tratar de forma semelhante, p. ex., o
+    homicídio e o roubo seguido de morte, que, a rigor, é considerado um
+    crime contra o patrimônio).
+
+5.  A rigor, o crime de estupro está previsto no artigo 217 do Código
+    Penal, em título que hoje se chama “Crime contra a dignidade
+    sexual”. É preciso levar em conta, porém, que originalmente essa
+    parte do cógido era denominada “Crimes contra os costumes”, o que
+    representa uma visão antiquada - e inadequada - do tema. Entende-se
+    aqui que sua natureza se aproxima muito mais de crimes contra a
+    integridade física e emocional, de modo que poderia perfeitamente
+    ocupar o mesmo capítulo do código inerente aos crimes contra a
+    pessoa.
