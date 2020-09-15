@@ -15,27 +15,6 @@ knitr::opts_chunk$set(
 
 ```
 
-```{r afazer, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-
-# TERMINAR TEXTO!!!! IMPORTANTE
-
-# Gráficos:colocar linha de tendências nos gráficos de criminalidade
-# Gráficos: arrumar os labs
-
-# Tabela: arrumar labels dos fatores de crime
-# Tabela: arrumar nome das colunas
-# Tabela: arrumar delta <U+0394>
-
-# Texto: formatação
-
-# Colocar caption nas tabelas e nos mapas
-# Colocar o Norte nos mapas
-
-#### Mudar o repositório para público
-#### Enviar o link
-
-```
-
 ```{r inicio, message=FALSE, warning=FALSE, include=FALSE}
 
 # Chamar pacotes úteis
@@ -59,7 +38,7 @@ source(file = "R/4-Mapas.R", encoding = 'UTF-8')
 
 ```
 
-# CRIME E COVID: uma relação viral? [^1]
+# CRIME E COVID: uma relação doentia? [^1]
 
 [^1]: A ideia do nome veio de uma excelente matéria da [Revista piauí](https://piaui.folha.uol.com.br/crime-e-covid-no-rio/)
 
@@ -67,7 +46,7 @@ source(file = "R/4-Mapas.R", encoding = 'UTF-8')
 
 O presente trabalho visa realizar uma singela análise sobre os índices de criminalidade no Estado de São Paulo em conjunto com os números da pandemia causada pela COVID-19.[^2]
 
-[^2]: Ele se dá no contexto de conclusão do [Curso de R para Ciência de Dados](https://www.curso-r.com/cursos/r4ds-2/) e, portanto, não tem grandes pretensões científicas.
+[^2]: Ele se dá no contexto de conclusão do [Curso de R para Ciência de Dados](https://www.curso-r.com/cursos/r4ds-2/) e, portanto, não tem grandes pretensões científicas. Ainda, é preciso levar em conta a inexperiência do autor com programação em R e com análise de dados de modo geral.
 
 Pretendemos, partindo do contexto da pandemia (um evento novo, que gerou e ainda gera grande comoção), levantar algumas reflexões sobre os impactos da violência, que além de velha conhecida no Estado, aparentemente já foi normalizada em muitos sentidos. Dentre as perguntas que se pretende instigar (mas sem a pretensão de oferecer respostas):
 
@@ -245,7 +224,7 @@ Foge do escopo desse estudo nos aprofundarmos nesse tema. Inclusive, o banco SSP
 
 #### Todas as regiões tiveram comportamento semelhante?
 
-É importante
+Vamos observar como se deu a distribuição dos crimes pelas regiões adotadas nesse estudo.
 
 ```{r grafico_crimes_SP, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -253,20 +232,18 @@ gganimate::animate(grafico_crimes_SP, end_pause = 40)
 
 ```
 
-Da visualização do gráfico notamos que **todas** as categorias de crimes demonstram redução em 2020, exceto uma, *CVLI*. Ou seja, destoando dos demais tipos de crime, tudo indica que em 2020 haverá - ao menos em parte das regiões - mais CVLI do que o ano passado.
-
-Pertinente, então, observarmos **quais** regiões tiveram esse comportamento.
+Para melhor visualizar quais foram as regiões que tiveram aumento, reforçando o que o gráfico nos mostra, vejamos a tabela a seguir:
 
 ```{r tabela_diferenças_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
 
 tabela_diferencas_CVLI %>% 
-  knitr::kable(col.names = c("Região", "População", "2019", "2020", "Δ%"),
+  knitr::kable(col.names = c("Região", "População", "2019", "2020", "Diferença em %"),
                digits = 1, align = "c", 
                format.args = list(big.mark = ".", decimal.mark = ",")) %>% 
   kableExtra::kable_paper(c("striped", "condensed"), full_width = F)
 ```
 
-Observamos então que as regiões de Araçatuba, Bauru,
+Geograficamente, podemos destacar as regiões que tiveram esse aumento:
 
 ```{r mapa_diferencas_CVLI, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -274,15 +251,23 @@ mapa_diferencas_CVLI
 
 ```
 
-## Incidências de crime
+Vemos, portanto, que, embora existam ainda perguntas sem resposta, está claro que os crimes violentos letais intencionais (CVLI) tiveram um destaque importante durante a pandemia: tanto por vermos, surpreendentemente, revertida a tendência histórica de redução, como, também, pelas questões postas acima.
 
-Temos regiões com mais crime que covid?
+Oportuno, então, observar com mais vagar essa categoria de crimes.
 
-Temos uma pandemia de violência?
+## Violência pandêmica?
 
-Vamos olhar para as cidades que tiveram ao menos um registro de óbito por COVID. Elas totalizam `r covid_sp %>% filter(obitosAcumulado > 0, mes == max(mes)) %>% nrow()` cidades.
+Convidamos o leitor e a leitora a retomarem a pergunta feita no início: temos mais vítimas por COVID-19 ou por crimes violentos?
 
-Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID do que por CVLI. Embora imperfeita, a comparação é possível considerando que o resultado dos CVLI é praticamente sempre o óbito.
+Essa questão é importante pois, é inegável que há relevantes impactos sociais, econômicos e culturais que a COVID-19 irá impor ao Brasil e a o mundo.
+
+Se a resposta da pergunta acima, à luz dos dados postos, indicar que nesse mesmo período a violência ceifou mais vidas do que o coronavírus, poderíamos nos perguntar se a violência no Estado não se tornou, também ela, pandêmica.
+
+Para continuar essa reflexão vamos olhar para as cidades que tiveram ao menos um registro de óbito por COVID. Elas totalizam `r covid_sp %>% filter(obitosAcumulado > 0, mes == max(mes)) %>% nrow()` cidades.
+
+Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID do que por CVLI. Embora imperfeita, a comparação é possível considerando que o resultado dos CVLI é o óbito[^6].
+
+[^6]: Ainda que aqui tenhamos agrupado também os homicídios não consumados ("tentativas de homicídio").
 
 ```{r tabela_cidades_mais_covid, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -292,16 +277,32 @@ tabela_cvli_mortalidade %>%
    kableExtra::kable_paper("hover", full_width = F)
 ```
 
+De um lado, chama atenção que a COVID tenha sido a maior causa de óbito em apenas 6 municípios, sendo que 4 deles não tiveram nenhuma morte registrada por CVLI.
+
+Por outro lado, chama atenção que as duas cidades que tiveram mais mortes por COVID do que por CVLI sejam, justamente São Paulo - a capital e maior cidade do país - e Santos, uma das principais cidades do litoral.
+
 ## Conclusão?
 
-Blablabla
+Tendo em mente tudo o que observamos aqui, pudemos constatar que:
+
+-   A COVID-19 teve (e, quiçá, ainda tem) enorme impacto em todo o estado de São Paulo;
+
+-   Não se pode afirmar, necessariamente, relação de causa e efeito entre a pandemia e a criminalidade. Porém, o número de ocorrências sofreu queda neste período, com destacada exceção - justamente - dos CVLI.
+
+-   Há fatores como a subnotificação que podem melhor explicar esse fenômeno. Por outro lado, continua sendo intrigante o não-impacto sobre esses crimes violentos.
+
+-   Que "novo normal" pretendemos construir ao fim da pandemia de COVID-19? Ele inclui o enfrentamento das causas que levam a taxas de violência tão significativas?
 
 ## Próximos temas
 
-Diante do que foi exposto, creio ser possível levantar algumas questões para estudos futuros e mais aprofundados:
+Menos pelo que foi dito e mais pelo que não pode ser dito, é possível levantar algumas questões para estudos futuros e mais aprofundados:
 
 -   Considerando que em CVLI não são englobadas as mortes causadas por intervenção policial, é importante considerar esse aspecto.
 
 -   Observar dados mais atualizados tanto de crimes quanto de COVID pois é possível que a taxa constante de crimes não tenha sido superada pelas da pandemia.
+
+-   Levar em conta que é possível que haja registro tardio de crimes ocorridos nesse período e represados (ou subnotificados) durante a pandemia.
+
+-   Observar em outros países as taxas de criminalidade a fim de verificar possíveis padrões.
 
 ## Notas

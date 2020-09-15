@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CRIME E COVID: uma relação viral? \[1\]
+# CRIME E COVID: uma relação doentia? \[1\]
 
 ## APRESENTAÇÃO
 
@@ -276,17 +276,13 @@ pandemia.
 
 #### Todas as regiões tiveram comportamento semelhante?
 
-É importante
+Vamos observar como se deu a distribuição dos crimes pelas regiões
+adotadas nesse estudo.
 
 ![](README_files/figure-gfm/grafico_crimes_SP-1.gif)<!-- -->
 
-Da visualização do gráfico notamos que **todas** as categorias de crimes
-demonstram redução em 2020, exceto uma, *CVLI*. Ou seja, destoando dos
-demais tipos de crime, tudo indica que em 2020 haverá - ao menos em
-parte das regiões - mais CVLI do que o ano passado.
-
-Pertinente, então, observarmos **quais** regiões tiveram esse
-comportamento.
+Para melhor visualizar quais foram as regiões que tiveram aumento,
+reforçando o que o gráfico nos mostra, vejamos a tabela a seguir:
 
 <table class=" lightable-paper lightable-striped" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 
@@ -320,7 +316,7 @@ População
 
 <th style="text-align:center;">
 
-\<U+0394\>%
+Diferença em %
 
 </th>
 
@@ -742,22 +738,38 @@ Sorocaba
 
 </table>
 
-Observamos então que as regiões de Araçatuba, Bauru,
+Geograficamente, podemos destacar as regiões que tiveram esse aumento:
 
 ![](README_files/figure-gfm/mapa_diferencas_CVLI-1.png)<!-- -->
 
-## Incidências de crime
+Vemos, portanto, que, embora existam ainda perguntas sem resposta, está
+claro que os crimes violentos letais intencionais (CVLI) tiveram um
+destaque importante durante a pandemia: tanto por vermos,
+surpreendentemente, revertida a tendência histórica de redução, como,
+também, pelas questões postas acima.
 
-Temos regiões com mais crime que covid?
+Oportuno, então, observar com mais vagar essa categoria de crimes.
 
-Temos uma pandemia de violência?
+## Violência pandêmica?
 
-Vamos olhar para as cidades que tiveram ao menos um registro de óbito
-por COVID. Elas totalizam 286 cidades.
+Convidamos o leitor e a leitora a retomarem a pergunta feita no início:
+temos mais vítimas por COVID-19 ou por crimes violentos?
+
+Essa questão é importante pois, é inegável que há relevantes impactos
+sociais, econômicos e culturais que a COVID-19 irá impor ao Brasil e a o
+mundo.
+
+Se a resposta da pergunta acima, à luz dos dados postos, indicar que
+nesse mesmo período a violência ceifou mais vidas do que o coronavírus,
+poderíamos nos perguntar se a violência no Estado não se tornou, também
+ela, pandêmica.
+
+Para continuar essa reflexão vamos olhar para as cidades que tiveram ao
+menos um registro de óbito por COVID. Elas totalizam 286 cidades.
 
 Dessas, vamos verificar se e quais cidades tiveram mais óbitos por COVID
 do que por CVLI. Embora imperfeita, a comparação é possível considerando
-que o resultado dos CVLI é praticamente sempre o óbito.
+que o resultado dos CVLI é o óbito\[6\].
 
 <table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 
@@ -1009,14 +1021,39 @@ covid
 
 </table>
 
+De um lado, chama atenção que a COVID tenha sido a maior causa de óbito
+em apenas 6 municípios, sendo que 4 deles não tiveram nenhuma morte
+registrada por CVLI.
+
+Por outro lado, chama atenção que as duas cidades que tiveram mais
+mortes por COVID do que por CVLI sejam, justamente São Paulo - a capital
+e maior cidade do país - e Santos, uma das principais cidades do
+litoral.
+
 ## Conclusão?
 
-Blablabla
+Tendo em mente tudo o que observamos aqui, pudemos constatar que:
+
+  - A COVID-19 teve (e, quiçá, ainda tem) enorme impacto em todo o
+    estado de São Paulo;
+
+  - Não se pode afirmar, necessariamente, relação de causa e efeito
+    entre a pandemia e a criminalidade. Porém, o número de ocorrências
+    sofreu queda neste período, com destacada exceção - justamente - dos
+    CVLI.
+
+  - Há fatores como a subnotificação que podem melhor explicar esse
+    fenômeno. Por outro lado, continua sendo intrigante o não-impacto
+    sobre esses crimes violentos.
+
+  - Que “novo normal” pretendemos construir ao fim da pandemia de
+    COVID-19? Ele inclui o enfrentamento das causas que levam a taxas de
+    violência tão significativas?
 
 ## Próximos temas
 
-Diante do que foi exposto, creio ser possível levantar algumas questões
-para estudos futuros e mais aprofundados:
+Menos pelo que foi dito e mais pelo que não pode ser dito, é possível
+levantar algumas questões para estudos futuros e mais aprofundados:
 
   - Considerando que em CVLI não são englobadas as mortes causadas por
     intervenção policial, é importante considerar esse aspecto.
@@ -1025,6 +1062,13 @@ para estudos futuros e mais aprofundados:
     é possível que a taxa constante de crimes não tenha sido superada
     pelas da pandemia.
 
+  - Levar em conta que é possível que haja registro tardio de crimes
+    ocorridos nesse período e represados (ou subnotificados) durante a
+    pandemia.
+
+  - Observar em outros países as taxas de criminalidade a fim de
+    verificar possíveis padrões.
+
 ## Notas
 
 1.  A ideia do nome veio de uma excelente matéria da [Revista
@@ -1032,7 +1076,9 @@ para estudos futuros e mais aprofundados:
 
 2.  Ele se dá no contexto de conclusão do [Curso de R para Ciência de
     Dados](https://www.curso-r.com/cursos/r4ds-2/) e, portanto, não tem
-    grandes pretensões científicas.
+    grandes pretensões científicas. Ainda, é preciso levar em conta a
+    inexperiência do autor com programação em R e com análise de dados
+    de modo geral.
 
 3.  De acordo com as teorias clássicas do Direito Penal. Grosso modo,
     poderia se dizer que o bem juridico penal é aquele valor protegido
@@ -1056,3 +1102,6 @@ para estudos futuros e mais aprofundados:
     integridade física e emocional, de modo que poderia perfeitamente
     ocupar o mesmo capítulo do código inerente aos crimes contra a
     pessoa.
+
+6.  Ainda que aqui tenhamos agrupado também os homicídios não consumados
+    (“tentativas de homicídio”).
